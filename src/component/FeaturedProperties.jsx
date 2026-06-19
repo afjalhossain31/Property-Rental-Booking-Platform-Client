@@ -50,7 +50,7 @@ const sampleProperties = [
 
 export default function FeaturedProperties() {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-12">
+    <section className="mx-auto max-w-7xl px-4 py-5">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-slate-900">Featured Properties</h2>
         <Link href="/properties" className="text-sm text-sky-600 hover:underline">

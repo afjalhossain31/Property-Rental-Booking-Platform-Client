@@ -24,7 +24,7 @@ const Banner = () => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-slate-700">
+    <section className="relative overflow-hidden bg-slate-900/70 backdrop-blur-xl">
       {/* Background Image Container with Cinematic Dark Overlay */}
       <div className="absolute inset-0 -z-10">
         <Image
@@ -137,7 +137,7 @@ const Banner = () => {
             </form>
 
             {/* Quick Suggestions / Badges */}
-            <div className="mt-10 flex flex-wrap justify-center items-center gap-3">
+            <div className="mt-5 flex flex-wrap justify-center items-center gap-3">
               <span className="text-xs font-semibold uppercase tracking-widest text-slate-400 mr-1">
                 Trending Cities:
               </span>
