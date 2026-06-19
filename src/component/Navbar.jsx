@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Bars from "@gravity-ui/icons/Bars";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -8,6 +12,18 @@ const navLinks = [
 ];
 
 const Navbar = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const isLoggedIn = (typeof window !== "undefined") && window.localStorage.getItem("staynest-auth") === "true";
+
+  const handleLogout = () => {
+    try {
+      window.localStorage.removeItem("staynest-auth");
+    } catch {}
+    router.push("/");
+  };
+
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-slate-900 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -40,21 +56,39 @@ const Navbar = () => {
             </Link>
           ))}
 
-          {/* Guest Links (Default Visible) */}
           <div className="ml-2 flex items-center gap-2">
-            <Link
-              href="/login"
-              className="rounded-full px-5 py-2 text-sm font-medium text-slate-200 transition-all duration-200 hover:bg-white/10 hover:text-white"
-            >
-
-              Login
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-full bg-linear-to-r from-sky-500 to-cyan-400 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-500/25 transition-transform duration-200 hover:-translate-y-0.5"
-            >
-              Register
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link
+                  href="/dashboard/my-bookings"
+                  className="rounded-full px-5 py-2 text-sm font-medium text-slate-200 transition-all duration-200 hover:bg-white/10 hover:text-white"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="rounded-full bg-linear-to-r from-rose-500 to-red-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-rose-500/25 transition-transform duration-200 hover:-translate-y-0.5"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="rounded-full px-5 py-2 text-sm font-medium text-slate-200 transition-all duration-200 hover:bg-white/10 hover:text-white"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-full bg-linear-to-r from-sky-500 to-cyan-400 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-500/25 transition-transform duration-200 hover:-translate-y-0.5"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
 
@@ -90,20 +124,39 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Mobile Guest Links */}
           <div className="grid grid-cols-2 gap-3 pt-1">
-            <Link
-              href="/login"
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-center text-sm font-medium text-slate-100 transition-colors duration-200 hover:bg-white/10"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-2xl bg-linear-to-r from-sky-500 to-cyan-400 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-sky-500/25"
-            >
-              Register
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link
+                  href="/dashboard/my-bookings"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-center text-sm font-medium text-slate-100 transition-colors duration-200 hover:bg-white/10"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="rounded-2xl bg-linear-to-r from-rose-500 to-red-500 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-rose-500/25"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-center text-sm font-medium text-slate-100 transition-colors duration-200 hover:bg-white/10"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-2xl bg-linear-to-r from-sky-500 to-cyan-400 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-sky-500/25"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
