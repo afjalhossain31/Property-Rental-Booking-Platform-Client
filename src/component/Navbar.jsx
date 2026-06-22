@@ -14,13 +14,28 @@ const navLinks = [
 const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const [isMounted, setIsMounted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const isLoggedIn = (typeof window !== "undefined") && window.localStorage.getItem("staynest-auth") === "true";
+  useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      setIsMounted(true);
+
+      try {
+        setIsLoggedIn(window.localStorage.getItem("staynest-auth") === "true");
+      } catch {
+        setIsLoggedIn(false);
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, []);
 
   const handleLogout = () => {
     try {
       window.localStorage.removeItem("staynest-auth");
     } catch {}
+    setIsLoggedIn(false);
     router.push("/");
   };
 
@@ -57,7 +72,7 @@ const Navbar = () => {
           ))}
 
           <div className="ml-2 flex items-center gap-2">
-            {isLoggedIn ? (
+            {isMounted && isLoggedIn ? (
               <>
                 <Link
                   href="/dashboard/my-bookings"
@@ -125,7 +140,7 @@ const Navbar = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-3 pt-1">
-            {isLoggedIn ? (
+            {isMounted && isLoggedIn ? (
               <>
                 <Link
                   href="/dashboard/my-bookings"

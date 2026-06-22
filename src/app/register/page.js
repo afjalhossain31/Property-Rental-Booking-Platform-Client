@@ -1,124 +1,359 @@
-'use client';
+"use client";
 
-import { Radio, RadioGroup } from '@heroui/react';
-import Link from 'next/link';
-import React, { useState } from 'react';
+import { Radio, RadioGroup } from "@heroui/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Eye, EyeOff, Building2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import toast from "react-hot-toast";
+import { FcGoogle } from "react-icons/fc";
+
 
 const RegistrationPage = () => {
-  const [role, setRole] = useState("user");
+  const router = useRouter();
+
+  const [role, setRole] = useState("tenant");
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    photo: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [error, setError] = useState("");
+
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
+
+  const handleChange = (e) => {
+    setFormData((current) => ({
+      ...current,
+      [e.target.name]: e.target.value,
+    })); 
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setError("");
+
+    if (
+      formData.password !==
+      formData.confirmPassword
+    ) {
+      return setError(
+        "Password and Confirm Password do not match"
+      );
+    }
+
+    if (formData.password.length < 6) {
+      return setError(
+        "Password must be at least 6 characters"
+      );
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const {
+        data,
+        error: signUpError,
+      } = await authClient.signUp.email({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (signUpError) {
+        throw new Error(
+          signUpError.message ||
+          "Registration failed"
+        );
+      }
+
+      await fetch(
+        "http://localhost:5000/users",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            photo: formData.photo,
+            role,
+            createdAt: new Date(),
+          }),
+        }
+      );
+
+      toast.success(
+        "Account created successfully"
+      );
+
+      router.push("/login");
+    } catch (err) {
+      setError(
+        err?.message ||
+        "Something went wrong"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 relative overflow-hidden">
-      {/* Decorative Background Glows */}
-      <div className="absolute top-0 left-1/4 h-96 w-96 -translate-x-1/2 rounded-full bg-sky-400/10 blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 h-96 w-96 translate-x-1/2 rounded-full bg-indigo-400/10 blur-3xl" />
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-cyan-50 flex items-center justify-center px-4 py-10 relative overflow-hidden">
+      <div className="absolute top-0 left-0 h-96 w-96 rounded-full bg-sky-300/20 blur-3xl" />
 
-      <div className="w-full max-w-md bg-white rounded-2xl border border-slate-100 shadow-[0_20px_50px_rgba(15,23,42,0.06)] p-8 relative z-10 backdrop-blur-md">
-        
-        {/* Header */}
+      <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl" />
+
+      <div
+        className="
+        w-full
+        max-w-lg
+        bg-white/90
+        backdrop-blur-xl
+        rounded-3xl
+        border
+        border-white
+        shadow-[0_25px_80px_rgba(15,23,42,0.10)]
+        p-8
+        relative
+        z-10
+      "
+      >
+        {/* Logo */}
+
+        <div className="flex justify-center mb-4">
+          <div className="h-16 w-16 rounded-2xl bg-sky-500 text-white flex items-center justify-center">
+            <Building2 size={28} />
+          </div>
+        </div>
+
+        {/* Heading */}
+
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-black tracking-tight text-slate-900">
+          <h1 className="text-3xl font-black text-slate-900">
             Create Account
           </h1>
-          <p className="text-slate-500 font-medium text-sm mt-2">
-            Join StayNest to find or host your next property
+
+          <p className="text-slate-500 mt-2">
+            Join property rental platform and discover
+            your perfect property
           </p>
         </div>
 
         {/* Form */}
-        <form className="space-y-5">
-          
-          {/* Name Input */}
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5"
+        >
+          {/* Name */}
+
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            <label className="text-xs font-bold uppercase text-slate-700 mb-2 block">
               Full Name
             </label>
+
             <input
               type="text"
               name="name"
-              placeholder="Enter your name"
               required
-              className="w-full px-4 py-3 bg-slate-50/50 border border-slate-200/80 rounded-xl text-sm text-slate-900 font-medium placeholder-slate-400 outline-none transition-all duration-200 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-500/10"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your full name"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 outline-none"
             />
           </div>
 
-          {/* Email Input */}
+          {/* Email */}
+
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            <label className="text-xs font-bold uppercase text-slate-700 mb-2 block">
               Email Address
             </label>
+
             <input
               type="email"
               name="email"
-              placeholder="Enter your email"
               required
-              className="w-full px-4 py-3 bg-slate-50/50 border border-slate-200/80 rounded-xl text-sm text-slate-900 font-medium placeholder-slate-400 outline-none transition-all duration-200 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-500/10"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email address"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 outline-none"
             />
           </div>
 
-          {/* Role Selection (HeroUI) */}
-          <div className="space-y-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-              I want to join as a
+          {/* Photo URL */}
+
+          <div>
+            <label className="text-xs font-bold uppercase text-slate-700 mb-2 block">
+              Photo URL (Optional)
             </label>
+
+            <input
+              type="url"
+              name="photo"
+              value={formData.photo}
+              onChange={handleChange}
+              placeholder="https://example.com/profile.jpg"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 outline-none"
+            />
+          </div>
+
+          {/* Role */}
+          {/* 
+          <div>
+            <label className="text-xs font-bold uppercase text-slate-700 block mb-3">
+              Join As
+            </label>
+
             <RadioGroup
               value={role}
               onValueChange={setRole}
               orientation="horizontal"
-              classNames={{
-                wrapper: "gap-6",
-              }}
             >
-              <Radio 
-                value="user"
-                classNames={{
-                  label: "text-sm font-semibold text-slate-700",
-                  control: "bg-sky-500",
-                }}
-              >
-                Tenant (User)
+              <Radio value="tenant">
+                Tenant
               </Radio>
-              <Radio 
-                value="vendor"
-                classNames={{
-                  label: "text-sm font-semibold text-slate-700",
-                  control: "bg-sky-500",
-                }}
-              >
-                Property Owner (Vendor)
+
+              <Radio value="owner">
+                Property Owner
               </Radio>
             </RadioGroup>
-          </div>
+          </div> */}
 
-          {/* Password Input */}
+
+          {/* Password */}
+
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            <label className="text-xs font-bold uppercase text-slate-700 mb-2 block">
               Password
             </label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Create a strong password"
-              required
-              className="w-full px-4 py-3 bg-slate-50/50 border border-slate-200/80 rounded-xl text-sm text-slate-900 font-medium placeholder-slate-400 outline-none transition-all duration-200 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-500/10"
-            />
+
+            <div className="relative">
+
+              <input
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
+                name="password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Create password"
+                className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 bg-slate-50 focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 outline-none"
+
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowPassword(
+                    !showPassword
+                  )
+                }
+                className="absolute right-4 top-1/2 -translate-y-1/2"
+              >
+                {showPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </button>
+            </div>
           </div>
 
-          {/* Register Button */}
+          {/* Confirm Password */}
+
+          <div>
+            <label className="text-xs font-bold uppercase text-slate-700 mb-2 block">
+              Confirm Password
+            </label>
+
+            <div className="relative">
+              <input
+                type={
+                  showConfirmPassword
+                    ? "text"
+                    : "password"
+                }
+                name="confirmPassword"
+                required
+                value={
+                  formData.confirmPassword
+                }
+                onChange={handleChange}
+                placeholder="Confirm password"
+                className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 bg-slate-50 focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 outline-none"
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowConfirmPassword(
+                    !showConfirmPassword
+                  )
+                }
+                className="absolute right-4 top-1/2 -translate-y-1/2"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
+              {error}
+            </div>
+          )}
+
           <button
             type="submit"
-            className="w-full bg-linear-to-r from-sky-500 to-cyan-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-sky-500/20 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sky-500/35 active:translate-y-0 text-sm mt-2"
+            disabled={isSubmitting}
+            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-bold hover:scale-[1.01] transition-all"
           >
-            Get Started
+            {isSubmitting
+              ? "Creating Account..."
+              : "Create Account"}
           </button>
+
+          <button
+            type="button"
+            className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all duration-200"
+          >
+            <FcGoogle size={22} />
+            Continue with Google
+          </button>
+
+
+
         </form>
 
-        {/* Existing User Redirection */}
-        <p className="text-center text-sm font-medium text-slate-600 mt-8 pt-4 border-t border-slate-50">
-          Already have an account?{' '}
+        <p className="text-center mt-8 text-sm text-slate-600">
+          Already have an account?
+
           <Link
-            href="/auth/login"
-            className="text-sky-600 font-bold hover:text-sky-500 hover:underline"
+            href="/login"
+            className="text-sky-600 font-bold ml-2 hover:underline"
           >
             Login
           </Link>
