@@ -10,12 +10,13 @@ export default function Home() {
   return (
     <div>
       <Banner />
-     
+
       <TopLocations />
       <FeaturedProperties />
       <RentalStatistics />
+      <WhyChooseUs />
       <RecentlyAdded />
-       <WhyChooseUs />
+
     </div>
   );
 }
