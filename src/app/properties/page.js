@@ -1,19 +1,37 @@
 import PropertyCard from "@/component/PropertyCard";
-import { properties } from "@/data/properties";
 
 const propertyTypes = ["All", "Apartment", "House", "Studio", "Villa"];
 
-function filterProperties(searchParams) {
+// ১. ব্যাকএন্ড (MongoDB) থেকে ডাটা আনার জন্য ফাংশন
+async function fetchProperties() {
+  try {
+    const res = await fetch("http://localhost:5000/properties", {
+      cache: "no-store", // যেন সবসময় লেটেস্ট ডাটা আসে
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch properties");
+    }
+    return res.json();
+  } catch (error) {
+    console.error("Error fetching properties:", error);
+    return []; // ডাটাবেস কানেক্ট না হলে বা এরর হলে ফাঁকা অ্যারে রিটার্ন করবে
+  }
+}
+
+// ২. প্রপার্টি ফিল্টার করার ফাংশন
+function filterProperties(propertiesData, searchParams) {
   const locationQuery = (searchParams.location || "").toLowerCase().trim();
   const typeQuery = searchParams.type || "All";
   const sortQuery = searchParams.sort || "";
   const minQuery = Number(searchParams.min || 0);
   const maxQuery = Number(searchParams.max || 0);
 
-  let result = properties.filter((property) => property.status === "approved");
+  let result = propertiesData.filter((property) => property.status === "approved");
 
   if (locationQuery) {
-    result = result.filter((property) => property.location.toLowerCase().includes(locationQuery));
+    result = result.filter((property) =>
+      property.location?.toLowerCase().includes(locationQuery)
+    );
   }
 
   if (typeQuery && typeQuery !== "All") {
@@ -39,8 +57,15 @@ function filterProperties(searchParams) {
   return result;
 }
 
-export default function PropertiesPage({ searchParams }) {
-  const list = filterProperties(searchParams || {});
+export default async function PropertiesPage({ searchParams }) {
+  // Next.js 15 এর জন্য searchParams resolve করা
+  const resolvedParams = await searchParams;
+  
+  // ৩. ডাটাবেস থেকে সব প্রপার্টি কল করা হচ্ছে
+  const allProperties = await fetchProperties();
+  
+  // ৪. ডাটাবেসের ডাটাগুলো ফিল্টার করা হচ্ছে
+  const list = filterProperties(allProperties, resolvedParams || {});
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -49,21 +74,21 @@ export default function PropertiesPage({ searchParams }) {
           All Properties
         </span>
         <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
-          Browse approved properties in a clean 3-column grid
+          Browse approved properties in a clean grid
         </h1>
         <p className="mt-3 text-slate-600">
-          Search by location, filter by property type, and sort by price from low to high or high to low.
+          Search by location, filter by property type, and sort by price.
         </p>
       </div>
 
-      <form className="mt-8 grid gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-4" action="/properties" method="get">
-        <div>
+      <form className="mt-8 grid gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-6" action="/properties" method="get">
+        <div className="md:col-span-2">
           <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="location">Location</label>
           <input
             id="location"
             name="location"
             placeholder="Search city"
-            defaultValue={searchParams?.location || ""}
+            defaultValue={resolvedParams?.location || ""}
             className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-sky-400 focus:bg-white"
           />
         </div>
@@ -73,7 +98,7 @@ export default function PropertiesPage({ searchParams }) {
           <select
             id="type"
             name="type"
-            defaultValue={searchParams?.type || "All"}
+            defaultValue={resolvedParams?.type || "All"}
             className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-sky-400 focus:bg-white"
           >
             {propertyTypes.map((type) => (
@@ -83,11 +108,35 @@ export default function PropertiesPage({ searchParams }) {
         </div>
 
         <div>
+          <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="min">Min Price</label>
+          <input
+            id="min"
+            name="min"
+            type="number"
+            placeholder="0"
+            defaultValue={resolvedParams?.min || ""}
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-sky-400 focus:bg-white"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="max">Max Price</label>
+          <input
+            id="max"
+            name="max"
+            type="number"
+            placeholder="Any"
+            defaultValue={resolvedParams?.max || ""}
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-sky-400 focus:bg-white"
+          />
+        </div>
+
+        <div>
           <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="sort">Sort By</label>
           <select
             id="sort"
             name="sort"
-            defaultValue={searchParams?.sort || ""}
+            defaultValue={resolvedParams?.sort || ""}
             className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-sky-400 focus:bg-white"
           >
             <option value="">Newest first</option>
@@ -96,7 +145,7 @@ export default function PropertiesPage({ searchParams }) {
           </select>
         </div>
 
-        <div className="flex items-end gap-3">
+        <div className="flex items-end gap-3 md:col-span-6 lg:col-span-6">
           <button type="submit" className="w-full rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-700">
             Search
           </button>
@@ -112,7 +161,7 @@ export default function PropertiesPage({ searchParams }) {
 
       <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {list.map((property) => (
-          <PropertyCard key={property.id} property={property} />
+          <PropertyCard key={property._id || property.id} property={property} />
         ))}
       </div>
     </section>
