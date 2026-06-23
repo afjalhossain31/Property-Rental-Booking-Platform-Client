@@ -1,44 +1,102 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const recent = [
-  { id: "r1", title: "Green Villa", loc: "Khulna", price: "15,000", img: "https://images.unsplash.com/photo-1494526585095-c41746248156?w=1200&q=80" },
-  { id: "r2", title: "Royal Residence", loc: "Chattogram", price: "18,500", img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&q=80" },
-  { id: "r3", title: "Modern Family Home", loc: "Rajshahi", price: "22,000", img: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1200&q=80" },
-];
-
 export default function RecentlyAdded() {
+  const [properties, setProperties] = useState([]);
+  const userEmail = "tenant@example.com"; // এটি ডাইনামিক Auth থেকে আসা উচিত
+
+  useEffect(() => {
+    fetch("http://localhost:5000/properties")
+      .then((res) => res.json())
+      .then((data) => setProperties(data.slice(0, 3)));
+  }, []);
+
+  // Save ফাংশন - যা ডাটাবেসের favorites কালেকশনে পাঠাবে
+  const handleSave = async (property) => {
+    const favoriteData = {
+      propertyId: property._id,
+      title: property.title,
+      image: property.image,
+      price: property.price,
+      userEmail: userEmail,
+    };
+
+    try {
+      const res = await fetch("http://localhost:5000/favorites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(favoriteData),
+      });
+      const data = await res.json();
+      if (data.insertedId) {
+        alert("Property saved successfully!");
+      } else {
+        alert("Property already in favorites.");
+      }
+    } catch (error) {
+      console.error("Error saving property:", error);
+    }
+  };
+
   return (
-    <section className="mx-auto max-w-7xl px-4 py-12">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900">Recently Added</h2>
-          <p className="mt-1 text-sm text-slate-500">Newest properties added to the platform — updated daily.</p>
+    <section className="bg-slate-50/50">
+      <div className="mx-auto max-w-7xl px-4 pt-5 pb-16 sm:pt-12 sm:pb-24">
+        
+        <div className="mb-8 flex items-end justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              Recently Added
+            </h2>
+            <p className="mt-2 text-sm text-slate-500">Newest properties added to the platform.</p>
+          </div>
+          <Link href="/properties" className="hidden text-sm font-semibold text-sky-600 hover:underline sm:block">
+            View all &rarr;
+          </Link>
         </div>
-        <Link href="/properties" className="text-sm text-indigo-600 hover:underline">View all</Link>
-      </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {recent.map((it) => (
-          <article key={it.id} className="rounded-2xl bg-white shadow-sm hover:shadow-lg transition transform hover:-translate-y-1 overflow-hidden">
-            <div className="relative h-56 w-full">
-              <Image src={it.img} alt={it.title} fill className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-              <div className="absolute left-3 bottom-3 bg-white/90 rounded-md px-3 py-1 text-sm font-semibold">৳{it.price}/mo</div>
-            </div>
-
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-slate-900">{it.title}</h3>
-              <p className="text-sm text-slate-500 mt-1">📍 {it.loc}</p>
-              <div className="mt-4 flex items-center justify-between">
-                <Link href={`/properties/${it.id}`} className="text-sm text-indigo-600 hover:underline">View details</Link>
-                <button className="rounded-md bg-indigo-600 text-white px-3 py-1 text-sm hover:bg-indigo-700">Save</button>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {properties.map((it) => (
+            <article 
+              key={it._id} 
+              className="group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+            >
+              <div className="relative h-56 w-full overflow-hidden">
+                <Image 
+                  src={it.image} 
+                  alt={it.title} 
+                  fill 
+                  className="object-cover transition-transform duration-700 group-hover:scale-110" 
+                />
+                <div className="absolute bottom-4 left-4 rounded-full bg-white/95 px-3 py-1 text-sm font-bold text-slate-900 shadow-md">
+                  ৳{it.price}/month
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+
+              <div className="p-5">
+                <h3 className="text-lg font-semibold text-slate-900">{it.title}</h3>
+                <p className="mt-1 text-sm text-slate-500">📍 {it.location}</p>
+                
+                <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+                  <Link 
+                    href={`/properties/${it._id}`} 
+                    className="text-sm font-semibold text-sky-600 hover:underline"
+                  >
+                    View details
+                  </Link>
+                  <button 
+                    onClick={() => handleSave(it)}
+                    className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-sky-50 hover:text-sky-600"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );

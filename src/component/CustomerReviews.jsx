@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import StarFill from "@gravity-ui/icons/StarFill";
 import Person from "@gravity-ui/icons/Person";
 
@@ -29,47 +32,80 @@ const reviews = [
 ];
 
 export default function CustomerReviews() {
+  // Framer Motion Variants for Staggered Animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2, // প্রতিটি কার্ড ০.২ সেকেন্ড পর পর আসবে
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
   return (
-    <section className="relative overflow-hidden bg-slate-50 py-24 lg:py-32 border-t border-slate-100">
+    <section className="relative overflow-hidden border-t border-slate-100 bg-slate-50 py-24 lg:py-32">
       {/* Decorative Blur Ambient Background Elements */}
-      <div className="absolute top-12 right-1/4 h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
+      <div className="absolute right-1/4 top-12 h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
       <div className="absolute bottom-12 left-1/4 h-80 w-80 rounded-full bg-blue-400/10 blur-3xl" />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="mx-auto max-w-3xl text-center mb-16 lg:mb-24">
-          <span className="inline-flex rounded-full border border-sky-100 bg-sky-50 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-sky-600 mb-4">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+          className="mx-auto mb-16 max-w-3xl text-center lg:mb-24"
+        >
+          <span className="mb-4 inline-flex rounded-full border border-sky-100 bg-sky-50 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
             Testimonials
           </span>
           <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
             What Our Tenants Say About{" "}
-            <span className="bg-clip-text text-transparent bg-linear-to-r from-cyan-600 via-sky-500 to-blue-600">
+            <span className="bg-gradient-to-r from-cyan-600 via-sky-500 to-blue-600 bg-clip-text text-transparent">
               StayNest
             </span>
           </h2>
-          <p className="mt-4 text-base text-slate-600 max-w-xl mx-auto font-medium">
+          <p className="mx-auto mt-4 max-w-xl text-base font-medium text-slate-600">
             Read authentic stories from verified tenants who found their perfect spaces with us.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Dynamic Reviews Responsive Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Dynamic Reviews Responsive Grid with Framer Motion */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        >
           {reviews.map((review, idx) => (
-            <div
+            <motion.div
+              variants={cardVariants}
               key={idx}
               className="group relative flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-sky-200 hover:shadow-[0_12px_30px_rgba(14,165,233,0.08)]"
             >
               <div>
                 {/* 5-Star Rating Row */}
-                <div className="flex items-center gap-0.5 mb-4">
+                <div className="mb-4 flex items-center gap-0.5">
                   {[...Array(review.rating)].map((_, i) => (
                     <StarFill key={i} className="h-4 w-4 text-amber-400" />
                   ))}
                 </div>
 
                 {/* Review Text */}
-                <p className="text-sm leading-relaxed text-slate-600 font-medium italic">
+                <p className="text-sm font-medium italic leading-relaxed text-slate-600">
                   “{review.comment}”
                 </p>
               </div>
@@ -88,9 +124,9 @@ export default function CustomerReviews() {
                   </span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
       </div>
     </section>

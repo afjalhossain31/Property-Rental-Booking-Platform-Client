@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 export default function RentalStatistics() {
   const stats = [
     {
@@ -43,30 +47,83 @@ export default function RentalStatistics() {
     },
   ];
 
-  return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:py-20">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Rental Statistics
-        </h2>
-        <p className="mx-auto mt-3 max-w-2xl text-base text-slate-600">
-          Key platform metrics that show our reach and reliability across the country.
-        </p>
-      </div>
+  // Framer Motion Variants for Animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+      },
+    },
+  };
 
-      <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s) => (
-          <div
-            key={s.id}
-            className="group flex flex-col items-center rounded-2xl border border-slate-100 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
-          >
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-sky-50 text-sky-600 transition-colors duration-300 group-hover:bg-sky-600 group-hover:text-white">
-              {s.icon}
-            </div>
-            <div className="text-3xl font-extrabold text-slate-900">{s.value}</div>
-            <div className="mt-2 text-sm font-medium text-slate-500">{s.label}</div>
-          </div>
-        ))}
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+  return (
+    // এখানে pt-8 sm:pt-12 ব্যবহার করে উপরের প্যাডিং কমানো হয়েছে
+    <section className="relative overflow-hidden bg-white pt-8 pb-16 sm:pt-12 sm:pb-24">
+      {/* Subtle Background Glow Effect (Optional, adds premium feel) */}
+      <div className="absolute left-1/2 top-0 -z-10 h-[30rem] w-[50rem] -translate-x-1/2 rounded-full bg-sky-50/50 blur-3xl" />
+
+      <div className="mx-auto max-w-7xl px-4">
+        {/* Animated Header Section */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <span className="mb-4 inline-flex rounded-full border border-sky-100 bg-sky-50 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
+            Our Impact
+          </span>
+          <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
+            Rental Statistics
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base font-medium text-slate-600">
+            Key platform metrics that show our reach and reliability across the country.
+          </p>
+        </motion.div>
+
+        {/* Animated Grid Section */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        >
+          {stats.map((s) => (
+            <motion.div
+              variants={cardVariants}
+              key={s.id}
+              className="group flex flex-col items-center rounded-3xl border border-slate-100 bg-white p-8 shadow-sm transition-all duration-300 ease-out hover:-translate-y-2 hover:border-sky-200 hover:shadow-[0_12px_30px_rgba(14,165,233,0.1)]"
+            >
+              {/* Icon Container */}
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-sky-50 text-sky-600 shadow-inner transition-all duration-300 group-hover:scale-110 group-hover:bg-gradient-to-br group-hover:from-sky-500 group-hover:to-cyan-400 group-hover:text-white group-hover:shadow-sky-200">
+                {s.icon}
+              </div>
+              
+              {/* Number/Value */}
+              <div className="bg-gradient-to-br from-slate-900 to-slate-700 bg-clip-text text-4xl font-black tracking-tight text-transparent">
+                {s.value}
+              </div>
+              
+              {/* Label */}
+              <div className="mt-2 text-sm font-semibold tracking-wide text-slate-500 uppercase">
+                {s.label}
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

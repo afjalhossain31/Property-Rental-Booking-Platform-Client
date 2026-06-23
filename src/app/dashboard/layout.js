@@ -1,72 +1,83 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-
-const navItems = [
-  { href: "/dashboard/my-bookings", label: "My Bookings" },
-  { href: "/dashboard/favorites", label: "Favorites" },
-  { href: "/dashboard/profile", label: "Profile" },
-];
+import { usePathname } from "next/navigation";
 
 export default function DashboardLayout({ children }) {
-  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const [checking] = useState(() => {
-    try {
-      return !(typeof window !== "undefined" && window.localStorage.getItem("staynest-auth") === "true");
-    } catch {
-      return true;
-    }
-  });
 
-  useEffect(() => {
-    try {
-      const loggedIn = window.localStorage.getItem("staynest-auth") === "true";
-      if (!loggedIn) router.replace("/login");
-    } catch {
-      router.replace("/login");
-    }
-    // router used intentionally
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // মেনু লিঙ্কগুলো
+  const navLinks = [
+    { name: "My Properties", href: "/dashboard/my-properties" },
+    { name: "Booking Requests", href: "/dashboard/booking-requests" },
+    { name: "Add Property", href: "/dashboard/add-property" },
+  ];
 
-  if (checking) {
-    return (
-      <div className="mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4 text-slate-600">
-        Checking access...
-      </div>
-    );
-  }
+  const adminLinks = [
+    { name: "All Properties", href: "/dashboard/all-properties" },
+    { name: "All Bookings", href: "/dashboard/all-bookings" },
+    { name: "Transactions", href: "/dashboard/transactions" },
+  ];
+
+  // একটি হেল্পার ফাংশন সক্রিয় লিঙ্ক হাইলাইট করার জন্য
+  const isActive = (href) => pathname === href ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-sky-50 hover:text-sky-600";
 
   return (
-    <section className="mx-auto grid max-w-7xl gap-6 px-4 py-10 lg:grid-cols-[280px_1fr] lg:px-8">
-      <aside className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="rounded-2xl bg-slate-900 px-4 py-5 text-white">
-          <p className="text-xs uppercase tracking-[0.2em] text-sky-300">Tenant Dashboard</p>
-          <h1 className="mt-2 text-2xl font-bold">Manage your stay</h1>
-        </div>
+    <div className="mx-auto max-w-7xl px-4 py-10 lg:px-8">
+      
+      {/* Mobile Toggle Button */}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="lg:hidden mb-6 flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"
+      >
+        {isOpen ? "Close Menu" : "Open Dashboard Menu"}
+      </button>
 
-        <nav className="mt-4 grid gap-2">
-          {navItems.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${active ? "bg-sky-50 text-sky-700" : "text-slate-700 hover:bg-slate-50"}`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
+      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+        
+        {/* Sidebar Navigation */}
+        <aside className={`${isOpen ? "block" : "hidden"} lg:block space-y-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 h-fit`}>
+          
+          {/* Account Section (Profile) */}
+          <div>
+            <h2 className="px-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Account</h2>
+            <Link href="/dashboard/profile" className={`flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-xl transition-colors ${isActive("/dashboard/profile")}`}>
+              <span>👤</span> Profile
+            </Link>
+          </div>
 
-      <main className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
-        {children}
-      </main>
-    </section>
+          {/* Owner Section */}
+          <div>
+            <h2 className="px-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Owner Panel</h2>
+            <nav className="space-y-1">
+              {navLinks.map((link) => (
+                <Link key={link.href} href={link.href} className={`block px-4 py-2 text-sm font-medium rounded-xl transition-colors ${isActive(link.href)}`}>
+                  {link.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
+          
+          {/* Admin Section */}
+          <div>
+            <h2 className="px-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Admin Panel</h2>
+            <nav className="space-y-1">
+              {adminLinks.map((link) => (
+                <Link key={link.href} href={link.href} className={`block px-4 py-2 text-sm font-medium rounded-xl transition-colors ${isActive(link.href)}`}>
+                  {link.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </aside>
+
+        {/* Main Dashboard Content */}
+        <main className="w-full min-h-[60vh] rounded-3xl bg-white p-6 border border-slate-200 shadow-sm md:p-8">
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }

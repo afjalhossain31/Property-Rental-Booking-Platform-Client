@@ -52,7 +52,7 @@ export default function PropertyCard({ property }) {
           </div>
           
           <Link
-            href={`/property/${property._id}`}
+            href={`/properties/${property._id}`}
             className="text-sm font-semibold text-sky-600 transition-colors hover:text-sky-700 hover:underline"
           >
             View Details

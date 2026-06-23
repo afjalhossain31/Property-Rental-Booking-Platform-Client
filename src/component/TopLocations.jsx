@@ -10,7 +10,7 @@ export default function TopLocations() {
 
   return (
     <section className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 pt-4 pb-16 sm:pt-8 sm:pb-24">
+      <div className="mx-auto max-w-7xl px-4 pt-4 pb-5 sm:pt-8 sm:pb-24">
         
         {/* Header Section */}
         <div className="mb-8 flex items-end justify-between">
