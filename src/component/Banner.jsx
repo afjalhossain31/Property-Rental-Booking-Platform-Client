@@ -42,10 +42,13 @@ const Banner = () => {
         <div className="w-full">
           <div className="max-w-4xl mx-auto text-center relative z-20">
             
-            {/* Top Minimal Badge */}
-            <span className="inline-flex rounded-full border border-sky-400/30 bg-sky-400/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-sky-300 mb-6 backdrop-blur-md">
-              Discover Premium Living
-            </span>
+            {/* Top Minimal Badge with Animation */}
+            <div className="inline-flex animate-bounce items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-4 py-1.5 mb-6 backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]"></span>
+              <span className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-300">
+                Discover Premium Living
+              </span>
+            </div>
 
             {/* Typography with Gradient Accents */}
             <h1 className="text-4xl font-black leading-tight tracking-tight text-transparent bg-clip-text bg-linear-to-r from-white via-slate-100 to-slate-300 sm:text-5xl md:text-6xl lg:text-7xl">
@@ -98,28 +101,28 @@ const Banner = () => {
 
                 <div className="hidden h-8 w-px bg-white/10 sm:block" />
 
-                {/* 3. Budget Min/Max Fields */}
+                {/* 3. Budget Min/Max Fields (Fixed the labels and states) */}
                 <div className="flex items-center gap-2 px-5 py-1 sm:w-56">
                   <div className="flex flex-col items-start w-full">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400/80 mb-0.5 hidden sm:block">Max Price</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400/80 mb-0.5 hidden sm:block">Min Price</span>
                     <input
                       aria-label="Price min"
                       value={minPrice}
                       onChange={(e) => setMinPrice(e.target.value)}
                       type="number"
-                      placeholder="Max"
+                      placeholder="Min"
                       className="w-full bg-transparent text-sm font-medium text-white placeholder-slate-400 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                   <span className="text-slate-500 text-xs mt-3 hidden sm:block">-</span>
                   <div className="flex flex-col items-start w-full">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400/80 mb-0.5 hidden sm:block">Min Price</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400/80 mb-0.5 hidden sm:block">Max Price</span>
                     <input
                       aria-label="Price max"
                       value={maxPrice}
                       onChange={(e) => setMaxPrice(e.target.value)}
                       type="number"
-                      placeholder="Min"
+                      placeholder="Max"
                       className="w-full bg-transparent text-sm font-medium text-white placeholder-slate-400 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
@@ -160,7 +163,7 @@ const Banner = () => {
       {/* Curved Section Transition Spacer */}
       <div className="relative z-10 -mt-12">
         <div className="mx-auto max-w-7xl px-4">
-          <div className="rounded-t-[2.5rem] bg-white shadow-[0_-15px_40px_rgba(2,6,23,0.15)] h-12 sm:h-16" />
+          {/* <div className="rounded-t-[2.5rem] bg-white shadow-[0_-15px_40px_rgba(2,6,23,0.15)] h-12 sm:h-16" /> */}
         </div>
       </div>
     </section>
