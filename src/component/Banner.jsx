@@ -54,7 +54,7 @@ const Banner = () => {
             <h1 className="text-4xl font-black leading-tight tracking-tight text-transparent bg-clip-text bg-linear-to-r from-white via-slate-100 to-slate-300 sm:text-5xl md:text-6xl lg:text-7xl">
               Find your dream stay <br />
               <span className="bg-clip-text text-transparent bg-linear-to-r from-cyan-400 via-sky-400 to-blue-500">
-                in minutes.
+                in minutes
               </span>
             </h1>
 
