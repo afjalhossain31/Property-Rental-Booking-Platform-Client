@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 export default function PropertyDetailsPage() {
   const params = useParams();
@@ -15,10 +16,18 @@ export default function PropertyDetailsPage() {
   const [bookingModal, setBookingModal] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
 
-  // ডেমো ইউজার (বাস্তবে লগইন করা ইউজারের Auth Data থেকে আসবে)
-  const user = { name: "Current User", email: "tenant@example.com" };
+  // লোকাল স্টোরেজ থেকে ইউজারের তথ্য রাখার জন্য স্টেট
+  const [currentUser, setCurrentUser] = useState({ name: "User", email: "" });
 
   useEffect(() => {
+    // পেজ লোড হলে লোকাল স্টোরেজ থেকে লগইন করা ইউজারের ইমেইল নিচ্ছি
+    if (typeof window !== "undefined") {
+      const email = window.localStorage.getItem("userEmail");
+      if (email) {
+        setCurrentUser({ name: "User", email: email });
+      }
+    }
+
     const fetchDetails = async () => {
       try {
         const res = await fetch(`http://localhost:5000/properties/${id}`);
@@ -34,41 +43,50 @@ export default function PropertyDetailsPage() {
     if (id) fetchDetails();
   }, [id]);
 
+  // Request to Book বাটনে ক্লিক করলে চেক করবে ইউজার লগইন করা আছে কি না
+  const handleOpenModal = () => {
+    if (!currentUser.email) {
+      toast.error("Please login to book a property!");
+      router.push("/login");
+      return;
+    }
+    setBookingModal(true);
+  };
+
+  // Stripe Checkout API কল করার ফাংশন
   const handleBooking = async (e) => {
     e.preventDefault();
     setBookingLoading(true);
 
-    const bookingData = {
-      propertyId: property._id,
-      propertyName: property.title,
-      propertyImage: property.image,
-      ownerEmail: property.ownerEmail,
-      tenantName: user.name,
-      tenantEmail: user.email,
-      amount: property.price,
-      status: "Pending", // Default status, owner will approve/reject
-      date: new Date().toISOString(),
-    };
-
     try {
-      const res = await fetch("http://localhost:5000/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bookingData),
+      const currentEmail = window.localStorage.getItem("userEmail") || currentUser.email;
+
+      // Stripe-এর API Route-এ রিকোয়েস্ট পাঠানো হচ্ছে
+      const res = await fetch('/api/checkout_sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          property: property,
+          user: { email: currentEmail },
+        }),
       });
 
-      if (res.ok) {
-        alert("Booking request sent successfully to the owner!");
-        setBookingModal(false);
-        // বুকিং কমপ্লিট হলে ইউজারের নিজের বুকিং ড্যাশবোর্ডে নিয়ে যাবে
-        router.push("/dashboard/my-bookings"); 
+      const data = await res.json();
+
+      if (data.url) {
+        // সফল হলে Stripe-এর পেমেন্ট পেজে রিডাইরেক্ট করে দেওয়া হবে
+        window.location.href = data.url;
+      } else {
+        toast.error(data.error || "Failed to initiate payment");
+        setBookingLoading(false);
       }
     } catch (error) {
-      console.error("Booking failed:", error);
-      alert("Failed to create booking.");
-    } finally {
+      console.error("Payment error:", error);
+      toast.error("Something went wrong!");
       setBookingLoading(false);
-    }
+    } 
   };
 
   if (loading) {
@@ -87,13 +105,13 @@ export default function PropertyDetailsPage() {
     );
   }
 
-  // Amenities Array (যদি স্ট্রিং আকারে থাকে, তাহলে কমা দিয়ে ভাগ করে নিচ্ছি)
+  // Amenities Array (যদি স্ট্রিং আকারে থাকে, তাহলে কমা দিয়ে ভাগ করে নিচ্ছি)
   const amenitiesList = typeof property.amenities === 'string' 
     ? property.amenities.split(',').map(item => item.trim()) 
     : property.amenities || [];
 
   return (
-    <section className="bg-slate-50/50 py-12 sm:py-16">
+    <section className="bg-slate-50/50 py-12 sm:py-16 dark:bg-slate-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Main Image Header */}
@@ -139,28 +157,28 @@ export default function PropertyDetailsPage() {
           >
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Property Type</p>
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800/50">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Property Type</p>
                 <p className="mt-1 text-lg font-bold text-sky-600">{property.type}</p>
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Bedrooms</p>
-                <p className="mt-1 text-lg font-bold text-slate-900">{property.beds} Beds</p>
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800/50">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Bedrooms</p>
+                <p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{property.beds} Beds</p>
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Bathrooms</p>
-                <p className="mt-1 text-lg font-bold text-slate-900">{property.baths} Baths</p>
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800/50">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Bathrooms</p>
+                <p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{property.baths} Baths</p>
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Size</p>
-                <p className="mt-1 text-lg font-bold text-slate-900">{property.size || "N/A"} sqft</p>
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800/50">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Size</p>
+                <p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{property.size || "N/A"} sqft</p>
               </div>
             </div>
 
             {/* Description */}
             <div className="mt-10">
-              <h3 className="text-2xl font-bold text-slate-900">About this property</h3>
-              <p className="mt-4 leading-relaxed text-slate-600 whitespace-pre-line text-lg">
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">About this property</h3>
+              <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-line text-lg">
                 {property.description}
               </p>
             </div>
@@ -168,10 +186,10 @@ export default function PropertyDetailsPage() {
             {/* Amenities */}
             {amenitiesList.length > 0 && (
               <div className="mt-10">
-                <h3 className="text-2xl font-bold text-slate-900">Amenities</h3>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Amenities</h3>
                 <div className="mt-4 flex flex-wrap gap-3">
                   {amenitiesList.map((amenity, idx) => (
-                    <span key={idx} className="inline-flex rounded-xl bg-slate-200/50 px-4 py-2 font-medium text-slate-700">
+                    <span key={idx} className="inline-flex rounded-xl bg-slate-200/50 px-4 py-2 font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                       ✨ {amenity}
                     </span>
                   ))}
@@ -186,28 +204,28 @@ export default function PropertyDetailsPage() {
             animate={{ opacity: 1, x: 0 }} 
             transition={{ delay: 0.3 }}
           >
-            <div className="sticky top-28 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl lg:p-8">
+            <div className="sticky top-28 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl lg:p-8 dark:border-slate-800 dark:bg-slate-800/50">
               <div className="mb-6">
-                <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Rent Price</p>
+                <p className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Rent Price</p>
                 <div className="mt-1 flex items-end gap-2">
-                  <span className="text-4xl font-black text-slate-900">৳{property.price?.toLocaleString()}</span>
-                  <span className="mb-1 font-medium text-slate-500">/ {property.rentType || "month"}</span>
+                  <span className="text-4xl font-black text-slate-900 dark:text-white">৳{property.price?.toLocaleString()}</span>
+                  <span className="mb-1 font-medium text-slate-500 dark:text-slate-400">/ {property.rentType || "month"}</span>
                 </div>
               </div>
 
-              <div className="mb-6 rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                <div className="flex justify-between border-b border-slate-200 pb-3 text-sm">
-                  <span className="text-slate-500">Owner</span>
-                  <span className="font-semibold text-slate-900">{property.ownerName || "Property Owner"}</span>
+              <div className="mb-6 rounded-2xl bg-slate-50 p-4 border border-slate-100 dark:border-slate-700 dark:bg-slate-900/50">
+                <div className="flex justify-between border-b border-slate-200 pb-3 text-sm dark:border-slate-700">
+                  <span className="text-slate-500 dark:text-slate-400">Owner</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">{property.ownerName || "Property Owner"}</span>
                 </div>
                 <div className="flex justify-between pt-3 text-sm">
-                  <span className="text-slate-500">Contact</span>
-                  <span className="font-semibold text-sky-600">{property.ownerEmail || "Hidden"}</span>
+                  <span className="text-slate-500 dark:text-slate-400">Contact</span>
+                  <span className="font-semibold text-sky-600 dark:text-sky-400">{property.ownerEmail || "Hidden"}</span>
                 </div>
               </div>
               
               <button 
-                onClick={() => setBookingModal(true)}
+                onClick={handleOpenModal}
                 className="w-full rounded-2xl bg-gradient-to-r from-sky-500 to-blue-600 py-4 text-lg font-bold text-white shadow-lg shadow-sky-500/30 transition-all hover:-translate-y-1 hover:shadow-sky-500/50 active:translate-y-0"
               >
                 Request to Book
@@ -227,26 +245,25 @@ export default function PropertyDetailsPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl sm:p-8"
+            className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl sm:p-8 dark:bg-slate-900 dark:border dark:border-slate-800"
           >
-            <h3 className="text-2xl font-bold text-slate-900">Confirm Booking Request</h3>
-            <p className="mt-2 text-slate-500">
-              You are sending a request to book <strong className="text-slate-900">{property.title}</strong>. 
-              The owner will review your request.
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Confirm Booking Request</h3>
+            <p className="mt-2 text-slate-500 dark:text-slate-400">
+              You are sending a request to book <strong className="text-slate-900 dark:text-white">{property.title}</strong>. 
             </p>
             
-            <div className="my-6 space-y-3 rounded-2xl bg-slate-50 p-5 border border-slate-100">
+            <div className="my-6 space-y-3 rounded-2xl bg-slate-50 p-5 border border-slate-100 dark:border-slate-800 dark:bg-slate-800/50">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Tenant Name:</span>
-                <span className="font-semibold text-slate-900">{user.name}</span>
+                <span className="text-slate-500 dark:text-slate-400">Tenant Name:</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{currentUser.name}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Tenant Email:</span>
-                <span className="font-semibold text-slate-900">{user.email}</span>
+                <span className="text-slate-500 dark:text-slate-400">Tenant Email:</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{currentUser.email}</span>
               </div>
-              <div className="border-t border-slate-200 pt-3 flex justify-between font-medium">
-                <span className="text-slate-700">Total Rent:</span>
-                <span className="text-lg font-bold text-sky-600">৳{property.price?.toLocaleString()}</span>
+              <div className="border-t border-slate-200 pt-3 flex justify-between font-medium dark:border-slate-700">
+                <span className="text-slate-700 dark:text-slate-300">Total Rent:</span>
+                <span className="text-lg font-bold text-sky-600 dark:text-sky-400">৳{property.price?.toLocaleString()}</span>
               </div>
             </div>
 
@@ -254,14 +271,14 @@ export default function PropertyDetailsPage() {
               <button 
                 onClick={() => setBookingModal(false)} 
                 disabled={bookingLoading}
-                className="flex-1 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-600 transition-colors hover:bg-slate-50 disabled:opacity-50"
+                className="flex-1 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-600 transition-colors hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleBooking} 
                 disabled={bookingLoading}
-                className="flex-1 flex justify-center items-center rounded-xl bg-slate-900 py-3.5 font-semibold text-white transition-colors hover:bg-slate-800 disabled:opacity-70"
+                className="flex-1 flex justify-center items-center rounded-xl bg-slate-900 py-3.5 font-semibold text-white transition-colors hover:bg-slate-800 disabled:opacity-70 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
               >
                 {bookingLoading ? (
                   <span className="animate-pulse">Sending...</span>
