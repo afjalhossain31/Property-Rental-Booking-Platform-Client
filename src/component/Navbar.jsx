@@ -38,13 +38,9 @@ const Navbar = () => {
 
   useEffect(() => {
 
-    // এই ফাংশনটি এখন সরাসরি সার্ভার সেশন চেক করবে
-
     const checkAuthStatus = async () => {
 
       try {
-
-        // গুগল থেকে রিডাইরেক্ট হয়ে আসার পর এটি কাজ করবে
 
         const { data } = await authClient.getSession();
 
