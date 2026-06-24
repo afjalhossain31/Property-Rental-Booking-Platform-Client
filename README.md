@@ -1,36 +1,250 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🏠 Property Rental & Booking Platform
 
-## Getting Started
+A full-stack Property Rental & Booking Platform where property owners can list rental properties and tenants can discover, book, review, and pay reservation fees securely online. The platform features role-based access control, property management, booking workflows, Stripe payments, favorites management, analytics dashboards, and administrative moderation.
 
-First, run the development server:
+## 🌐 Live Website
+
+**Live Link:** https://your-live-site.vercel.app
+
+## 📂 Repositories
+
+**Client Repository:** https://github.com/your-username/property-rental-client
+
+**Server Repository:** https://github.com/your-username/property-rental-server
+
+---
+
+## 🎯 Project Purpose
+
+The purpose of this platform is to create a secure and transparent rental marketplace where:
+
+* Property Owners can list and manage rental properties.
+* Tenants can search, book, and review properties.
+* Admins can monitor users, properties, bookings, and transactions.
+* Online payments can be processed securely through Stripe.
+
+---
+
+## ✨ Key Features
+
+### 🔐 Authentication & Authorization
+
+* JWT Authentication
+* Email & Password Login
+* Google Social Login
+* Role-Based Access Control (Tenant, Owner, Admin)
+* Protected Routes & APIs
+
+### 🏡 Property Management
+
+* Add New Property
+* Update Property
+* Delete Property
+* Property Approval/Rejection System
+* Property Search & Filtering
+* Backend Sorting & Pagination
+
+### ❤️ Favorites System
+
+* Add Property to Favorites
+* View Favorite Properties
+* Remove Favorite Properties
+
+### 📅 Booking System
+
+* Book Property with Modal Form
+* Move-in Date Selection
+* Booking Status Tracking
+* Owner Approval/Rejection Workflow
+
+### 💳 Secure Payment
+
+* Stripe Payment Integration
+* Transaction Recording
+* Booking Confirmation After Payment
+* Payment Status Management
+
+### ⭐ Review System
+
+* Property Rating
+* User Reviews
+* Dynamic Review Display
+
+### 📊 Owner Dashboard
+
+* Total Earnings Analytics
+* Total Properties Overview
+* Total Bookings Overview
+* Monthly Earnings Chart (Recharts)
+* Property Management
+* Booking Requests Management
+
+### 🛠️ Admin Dashboard
+
+* Manage Users
+* Change User Roles
+* Manage Properties
+* Approve/Reject Properties
+* Manage Bookings
+* Monitor Transactions
+
+### 🎨 User Experience
+
+* Fully Responsive Design
+* Framer Motion Animations
+* Loading States
+* Custom Error Pages
+* Modern Dashboard UI
+* Clean & Professional Design
+
+---
+
+## 🧰 Technologies Used
+
+### Frontend
+
+* React.js
+* Next.js
+* Tailwind CSS
+* DaisyUI
+* Framer Motion
+* Axios
+* React Hook Form
+* React Icons
+* Recharts
+* SweetAlert2
+* Stripe React SDK
+
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB
+* JWT
+* Stripe API
+* CORS
+* dotenv
+
+---
+
+## 📌 Main Functionalities
+
+### Tenant
+
+* Browse Properties
+* Search & Filter Properties
+* Add to Favorites
+* Book Properties
+* Make Payments
+* Write Reviews
+* Manage Profile
+
+### Owner
+
+* Add Properties
+* Manage Properties
+* View Booking Requests
+* Approve/Reject Bookings
+* View Earnings Analytics
+
+### Admin
+
+* Manage Users
+* Manage Properties
+* Manage Bookings
+* Monitor Transactions
+* Assign Roles
+
+---
+
+## 🔒 Environment Variables
+
+### Client
+
+```env
+NEXT_PUBLIC_API_URL=your_api_url
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_key
+```
+
+### Server
+
+```env
+PORT=5000
+
+MONGODB_URI=your_mongodb_uri
+
+JWT_SECRET=your_jwt_secret
+
+STRIPE_SECRET_KEY=your_stripe_secret_key
+```
+
+---
+
+## 📦 NPM Packages Used
+
+### Frontend Packages
+
+```bash
+axios
+react-hook-form
+react-icons
+framer-motion
+sweetalert2
+recharts
+@stripe/react-stripe-js
+@stripe/stripe-js
+```
+
+### Backend Packages
+
+```bash
+express
+mongodb
+jsonwebtoken
+cors
+dotenv
+stripe
+```
+
+---
+
+## 🚀 Installation & Setup
+
+### Clone Repository
+
+```bash
+git clone <repository-url>
+```
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Run Client
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Run Server
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 👨‍💻 Developer
 
-To learn more about Next.js, take a look at the following resources:
+**Abdullah Al Afjal**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* B.Sc. in Computer Science & Engineering
+* Daffodil International University
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📄 License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is developed for educational and portfolio purposes.
