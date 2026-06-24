@@ -21,7 +21,7 @@ export default function DashboardLayout({ children }) {
     { name: "Transactions", href: "/dashboard/transactions" },
   ];
 
-  // একটি হেল্পার ফাংশন সক্রিয় লিঙ্ক হাইলাইট করার জন্য
+  // একটি হেল্পার ফাংশন সক্রিয় লিঙ্ক হাইলাইট করার জন্য
   const isActive = (href) => pathname === href ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-sky-50 hover:text-sky-600";
 
   return (
@@ -40,12 +40,18 @@ export default function DashboardLayout({ children }) {
         {/* Sidebar Navigation */}
         <aside className={`${isOpen ? "block" : "hidden"} lg:block space-y-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 h-fit`}>
           
-          {/* Account Section (Profile) */}
+          {/* Account Section (Profile & Bookings) */}
           <div>
             <h2 className="px-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Account</h2>
-            <Link href="/dashboard/profile" className={`flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-xl transition-colors ${isActive("/dashboard/profile")}`}>
-              <span>👤</span> Profile
-            </Link>
+            <nav className="space-y-1">
+              <Link href="/dashboard/profile" className={`flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-xl transition-colors ${isActive("/dashboard/profile")}`}>
+                <span>👤</span> Profile
+              </Link>
+              {/* My Bookings লিংকটি এখানে যুক্ত করা হয়েছে */}
+              <Link href="/dashboard/my-bookings" className={`flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-xl transition-colors ${isActive("/dashboard/my-bookings")}`}>
+                <span>📅</span> My Bookings
+              </Link>
+            </nav>
           </div>
 
           {/* Owner Section */}

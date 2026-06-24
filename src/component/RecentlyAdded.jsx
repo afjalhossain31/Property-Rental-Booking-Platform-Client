@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function RecentlyAdded() {
   const [properties, setProperties] = useState([]);
@@ -41,11 +42,38 @@ export default function RecentlyAdded() {
     }
   };
 
+  // Framer Motion Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15, // প্রতিটি কার্ড ০.১৫ সেকেন্ড পর পর আসবে
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
+  };
+
   return (
-    <section className="bg-slate-50/50">
+    <section className="bg-slate-50/50 overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 pt-5 pb-16 sm:pt-12 sm:pb-24">
         
-        <div className="mb-8 flex items-end justify-between">
+        {/* Animated Header Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 flex items-end justify-between"
+        >
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
               Recently Added
@@ -55,13 +83,21 @@ export default function RecentlyAdded() {
           <Link href="/properties" className="hidden text-sm font-semibold text-sky-600 hover:underline sm:block">
             View all &rarr;
           </Link>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Animated Grid for Properties */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {properties.map((it) => (
-            <article 
+            <motion.article 
+              variants={cardVariants}
               key={it._id} 
-              className="group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              className="group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-sky-200"
             >
               <div className="relative h-56 w-full overflow-hidden">
                 <Image 
@@ -71,18 +107,18 @@ export default function RecentlyAdded() {
                   className="object-cover transition-transform duration-700 group-hover:scale-110" 
                 />
                 <div className="absolute bottom-4 left-4 rounded-full bg-white/95 px-3 py-1 text-sm font-bold text-slate-900 shadow-md">
-                  ৳{it.price}/month
+                  ৳{it.price?.toLocaleString()}/month
                 </div>
               </div>
 
               <div className="p-5">
-                <h3 className="text-lg font-semibold text-slate-900">{it.title}</h3>
+                <h3 className="text-lg font-semibold text-slate-900 transition-colors group-hover:text-sky-600">{it.title}</h3>
                 <p className="mt-1 text-sm text-slate-500">📍 {it.location}</p>
                 
                 <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
                   <Link 
                     href={`/properties/${it._id}`} 
-                    className="text-sm font-semibold text-sky-600 hover:underline"
+                    className="text-sm font-semibold text-sky-600 hover:underline hover:text-sky-700"
                   >
                     View details
                   </Link>
@@ -94,9 +130,9 @@ export default function RecentlyAdded() {
                   </button>
                 </div>
               </div>
-            </article>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

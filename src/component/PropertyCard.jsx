@@ -1,7 +1,26 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function PropertyCard({ property }) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // SSR Safe Window Check
+    if (typeof window !== "undefined") {
+      try {
+        const authStatus = window.localStorage.getItem("staynest-auth") === "true";
+        if (authStatus) {
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error("Local storage error:", error);
+      }
+    }
+  }, []);
+
   return (
     <article className="group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-sky-100/50">
       <div className="relative h-56 w-full overflow-hidden">
@@ -11,6 +30,7 @@ export default function PropertyCard({ property }) {
           src={property.image} 
           alt={property.title} 
           fill 
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-110" 
         />
         
@@ -21,9 +41,11 @@ export default function PropertyCard({ property }) {
         <div className="absolute inset-0 bg-slate-900/0 transition-colors duration-300 group-hover:bg-slate-900/20" />
 
         {/* Status Badge */}
-        <div className="absolute left-4 top-4 rounded-full bg-emerald-500/90 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white shadow-md backdrop-blur-sm">
-          {property.status}
-        </div>
+        {property.status && (
+          <div className="absolute left-4 top-4 rounded-full bg-emerald-500/90 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white shadow-md backdrop-blur-sm">
+            {property.status}
+          </div>
+        )}
 
         {/* Price Badge with slight hover pop */}
         <div className="absolute bottom-4 left-4 rounded-full bg-white/95 px-3 py-1 text-sm font-bold text-slate-900 shadow-md backdrop-blur-sm transition-transform duration-300 group-hover:scale-105 group-hover:bg-white">
@@ -40,19 +62,22 @@ export default function PropertyCard({ property }) {
             </h3>
             <p className="mt-1 text-sm text-slate-500">{property.location}</p>
           </div>
-          <span className="whitespace-nowrap rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
-            {property.type}
-          </span>
+          {property.type && (
+            <span className="whitespace-nowrap rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+              {property.type}
+            </span>
+          )}
         </div>
 
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center gap-4 text-sm font-medium text-slate-600">
-            <span>{property.beds} beds</span>
-            <span>{property.baths} baths</span>
+            <span>{property.beds || 0} beds</span>
+            <span>{property.baths || 0} baths</span>
           </div>
           
+          {/* লগইন করা থাকলে ডিটেইলস পেজে যাবে, না থাকলে লগইন পেজে যাবে */}
           <Link
-            href={`/properties/${property._id}`}
+            href={isLoggedIn ? `/properties/${property._id}` : "/login"}
             className="text-sm font-semibold text-sky-600 transition-colors hover:text-sky-700 hover:underline"
           >
             View Details

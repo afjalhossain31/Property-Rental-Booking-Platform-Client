@@ -4,6 +4,7 @@ import Link from "next/link";
 import Bars from "@gravity-ui/icons/Bars";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client"; // এটি ইমপোর্ট করতে হবে
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -14,22 +15,55 @@ const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // শুধুমাত্র ইউজার লগ-ইন থাকলেই স্টেট আপডেট হবে
-    if (typeof window !== "undefined") {
-      const authStatus = window.localStorage.getItem("staynest-auth") === "true";
-      if (authStatus) {
-        setIsLoggedIn(true);
+    // এই ফাংশনটি এখন সরাসরি সার্ভার সেশন চেক করবে
+    const checkAuthStatus = async () => {
+      try {
+        // গুগল থেকে রিডাইরেক্ট হয়ে আসার পর এটি কাজ করবে
+        const { data } = await authClient.getSession();
+        
+        if (data && data.user) {
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem("staynest-auth", "true");
+          }
+          setIsLoggedIn(true);
+        } else {
+          // ফলব্যাক হিসেবে লোকাল স্টোরেজ চেক
+          if (typeof window !== "undefined") {
+            const authStatus = window.localStorage.getItem("staynest-auth") === "true";
+            setIsLoggedIn(authStatus);
+          }
+        }
+      } catch (error) {
+        if (typeof window !== "undefined") {
+          const authStatus = window.localStorage.getItem("staynest-auth") === "true";
+          setIsLoggedIn(authStatus);
+        }
       }
-    }
-  }, []);
+    };
 
-  const handleLogout = () => {
+    checkAuthStatus();
+
+    // স্টোরেজ ইভেন্ট লিসেনার
+    window.addEventListener("storage", checkAuthStatus);
+    return () => {
+      window.removeEventListener("storage", checkAuthStatus);
+    };
+  }, [pathname]); // pathname পরিবর্তন হলেই চেক করবে
+
+  const handleLogout = async () => {
+    // লগআউট করার সময় সেশন এবং স্টোরেজ দুটোই ক্লিয়ার করা হচ্ছে
+    try {
+      await authClient.signOut();
+    } catch (e) {
+      console.log("Signout error", e);
+    }
+    
     if (typeof window !== "undefined") {
       window.localStorage.removeItem("staynest-auth");
+      window.localStorage.removeItem("userEmail");
     }
     setIsLoggedIn(false);
     setIsMobileMenuOpen(false); 
