@@ -9,31 +9,31 @@ const Footer = () => {
             links: [
                 { label: "Home", href: "/" },
                 { label: "All Properties", href: "/properties" },
-                { label: "About Us", href: "#" }, 
+                { label: "About Us", href: "/about" },
             ],
         },
         {
             title: "Company",
             links: [
-                { label: "Blog", href: "#" }, 
-                { label: "Careers", href: "#" }, 
-                { label: "News", href: "#" }, 
+                { label: "Blog", href: "/blog" },
+                { label: "Careers", href: "/careers" },
+                { label: "News", href: "/news" },
             ],
         },
         {
             title: "Support",
             links: [
-                { label: "Contact Us", href: "#" }, 
-                { label: "FAQ", href: "#" }, 
-                { label: "Help Center", href: "#" },
+                { label: "Contact Us", href: "/contact" },
+                { label: "FAQ", href: "/faq" },
+                { label: "Help Center", href: "/help" },
             ],
         },
     ];
 
     const legalLinks = [
-        { label: "Privacy Policy", href: "#" },
-        { label: "Terms of Service", href: "#" },
-        { label: "Cookie Policy", href: "#" }, 
+        { label: "Privacy Policy", href: "/privacy" },
+        { label: "Terms of Service", href: "/terms" },
+        { label: "Cookie Policy", href: "/cookies" },
     ];
 
     // Premium SVG Icons for Social Media
