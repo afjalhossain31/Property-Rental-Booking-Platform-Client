@@ -1,7 +1,6 @@
 "use client";
 
 
-
 import Link from "next/link";
 
 import Bars from "@gravity-ui/icons/Bars";
