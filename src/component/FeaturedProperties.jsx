@@ -11,7 +11,6 @@ export default function FeaturedProperties() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // 1. SSR Safe Window Check (এরর ফিক্স করার জন্য)
     if (typeof window !== "undefined") {
       try {
         const authStatus = window.localStorage.getItem("staynest-auth") === "true";

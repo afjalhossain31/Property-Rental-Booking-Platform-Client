@@ -16,7 +16,6 @@ export default function MyBookingsPage() {
           return;
         }
 
-        // ইউজারের ইমেইল দিয়ে তার বুকিংগুলো ডাটাবেস থেকে আনা হচ্ছে
         const res = await fetch(`http://localhost:5000/bookings/user/${email}`);
         const data = await res.json();
         
@@ -55,7 +54,6 @@ export default function MyBookingsPage() {
           {bookings.map((booking) => (
             <div key={booking._id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:flex sm:items-center sm:justify-between transition hover:shadow-sm">
               <div>
-                {/* আপনার ডাটাবেসের ফিল্ডের নামের ওপর ভিত্তি করে propertyName বা name দিন */}
                 <h3 className="font-semibold text-slate-900">{booking.propertyName || "Property Name"}</h3>
                 <p className="text-sm text-slate-600">Check-in date: {booking.checkInDate || booking.date}</p>
               </div>
