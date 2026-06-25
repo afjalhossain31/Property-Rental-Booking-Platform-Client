@@ -14,7 +14,7 @@ export default function MyPropertiesPage() {
   useEffect(() => {
     const fetchMyProperties = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/properties/owner/${ownerEmail}`);
+        const res = await fetch(`/properties/owner/${ownerEmail}`);
         if (res.ok) {
           const data = await res.json();
           setProperties(data);
@@ -32,7 +32,7 @@ export default function MyPropertiesPage() {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
     
     try {
-      const res = await fetch(`http://localhost:5000/properties/${id}`, { method: "DELETE" });
+      const res = await fetch(`/properties/${id}`, { method: "DELETE" });
       if (res.ok) {
         setProperties(properties.filter(p => p._id !== id));
       }

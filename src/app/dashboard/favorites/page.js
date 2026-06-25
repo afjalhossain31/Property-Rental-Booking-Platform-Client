@@ -12,7 +12,7 @@ export default function FavoritesPage() {
 
   // ডাটাবেস থেকে ফেভারিট প্রপার্টিগুলো ফেচ করা
   useEffect(() => {
-    fetch(`http://localhost:5000/favorites/${userEmail}`)
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/favorites/${userEmail}`)
       .then((res) => res.json())
       .then((data) => {
         setFavorites(data);
@@ -27,7 +27,7 @@ export default function FavoritesPage() {
   // ডাটাবেস থেকে রিমুভ করার ফাংশন
   const removeFavorite = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/favorites/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/favorites/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {

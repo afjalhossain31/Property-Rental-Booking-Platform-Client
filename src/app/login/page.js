@@ -35,7 +35,7 @@ export default function LoginPage() {
         window.dispatchEvent(new Event("storage"));
         
         // ডাটাবেসে ইউজার সেভ করা (যদি নতুন হয়)
-        await fetch("http://localhost:5000/users/google", {
+        await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/users/google", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

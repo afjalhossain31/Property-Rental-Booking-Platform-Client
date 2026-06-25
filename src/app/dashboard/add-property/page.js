@@ -27,7 +27,7 @@ export default function AddPropertyPage() {
     const amenityArray = formData.amenities.split(",").map(item => item.trim());
 
     try {
-      const res = await fetch("http://localhost:5000/properties", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/properties`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

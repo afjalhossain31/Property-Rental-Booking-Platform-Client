@@ -25,7 +25,7 @@ export default function FeaturedProperties() {
     // 2. API Fetching
     const fetchProperties = async () => {
       try {
-        const res = await fetch("http://localhost:5000/properties");
+        const res = await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/properties");
         if (!res.ok) throw new Error("Failed to fetch data");
 
         const data = await res.json();

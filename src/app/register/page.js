@@ -41,7 +41,7 @@ const RegistrationPage = () => {
       if (socialError) throw new Error(socialError.message);
 
       if (data?.user) {
-        await fetch("http://localhost:5000/users/google", {
+        await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/users/google", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -87,7 +87,7 @@ const RegistrationPage = () => {
       if (signUpError) throw new Error(signUpError.message || "Registration failed");
 
       // ডাটাবেসে ইউজার সেভ করা
-      await fetch("http://localhost:5000/users", {
+      await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

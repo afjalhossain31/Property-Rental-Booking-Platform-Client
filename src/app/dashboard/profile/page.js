@@ -30,7 +30,7 @@ export default function ProfilePage() {
         }
 
         // ব্যাকএন্ড থেকে ইউজারের ডেটা ফেচ করা হচ্ছে
-        const res = await fetch(`http://localhost:5000/users/${email}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${email}`);
         const data = await res.json();
 
         if (data) {

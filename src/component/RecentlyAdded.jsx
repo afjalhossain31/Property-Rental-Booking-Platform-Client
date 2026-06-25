@@ -10,7 +10,7 @@ export default function RecentlyAdded() {
   const userEmail = "tenant@example.com"; // এটি ডাইনামিক Auth থেকে আসা উচিত
 
   useEffect(() => {
-    fetch("http://localhost:5000/properties")
+    fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/properties")
       .then((res) => res.json())
       .then((data) => setProperties(data.slice(0, 3)));
   }, []);
@@ -26,7 +26,7 @@ export default function RecentlyAdded() {
     };
 
     try {
-      const res = await fetch("http://localhost:5000/favorites", {
+      const res = await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/favorites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(favoriteData),

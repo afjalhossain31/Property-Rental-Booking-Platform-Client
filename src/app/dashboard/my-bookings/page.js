@@ -16,7 +16,7 @@ export default function MyBookingsPage() {
           return;
         }
 
-        const res = await fetch(`http://localhost:5000/bookings/user/${email}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/user/${email}`);
         const data = await res.json();
         
         setBookings(data);

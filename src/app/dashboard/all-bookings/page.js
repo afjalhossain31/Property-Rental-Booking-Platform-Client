@@ -10,7 +10,8 @@ export default function AllBookingsAdmin() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await fetch("http://localhost:5000/bookings");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/bookings`);
+        
         if (res.ok) setBookings(await res.json());
       } catch (error) {
         console.error("Failed to fetch bookings:", error);

@@ -10,7 +10,7 @@ export default function TransactionsPage() {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const res = await fetch("http://localhost:5000/transactions");
+        const res = await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/transactions");
         if (res.ok) setTransactions(await res.json());
       } catch (error) {
         console.error("Failed to fetch transactions:", error);

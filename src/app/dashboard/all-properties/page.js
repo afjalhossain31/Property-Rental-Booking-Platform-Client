@@ -15,7 +15,7 @@ export default function AllPropertiesAdmin() {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const res = await fetch("http://localhost:5000/properties");
+        const res = await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/properties");
         if (res.ok) setProperties(await res.json());
       } catch (error) {
         console.error("Failed to fetch properties:", error);
@@ -28,7 +28,7 @@ export default function AllPropertiesAdmin() {
 
   const handleApprove = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/properties/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/properties/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "Approved", feedback: "" })
@@ -45,7 +45,7 @@ export default function AllPropertiesAdmin() {
     if (!feedback.trim()) return alert("Feedback is required for rejection.");
     
     try {
-      const res = await fetch(`http://localhost:5000/properties/${selectedPropId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/properties/${selectedPropId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "Rejected", feedback })
@@ -63,7 +63,7 @@ export default function AllPropertiesAdmin() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this property permanently?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/properties/${id}`, { method: "DELETE" });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/properties/${id}`, { method: "DELETE" });
       if (res.ok) setProperties(properties.filter(p => p._id !== id));
     } catch (error) {
       console.error("Delete failed:", error);

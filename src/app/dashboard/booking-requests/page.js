@@ -12,7 +12,7 @@ export default function BookingRequestsPage() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/bookings/owner/${ownerEmail}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/owner/${ownerEmail}`);
         if (res.ok) setRequests(await res.json());
       } catch (error) {
         console.error("Failed to fetch requests:", error);
@@ -25,7 +25,7 @@ export default function BookingRequestsPage() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:5000/bookings/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus })

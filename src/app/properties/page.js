@@ -5,7 +5,7 @@ const propertyTypes = ["All", "Apartment", "House", "Studio", "Villa"];
 // ১. ব্যাকএন্ড (MongoDB) থেকে ডাটা আনার জন্য ফাংশন
 async function fetchProperties() {
   try {
-    const res = await fetch("http://localhost:5000/properties", {
+    const res = await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/properties", {
       cache: "no-store", // যেন সবসময় লেটেস্ট ডাটা আসে
     });
     if (!res.ok) {
