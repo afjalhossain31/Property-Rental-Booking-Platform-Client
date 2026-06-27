@@ -45,7 +45,6 @@ export default function WhyChooseUs() {
   };
 
   return (
-    // উপরের প্যাডিং কমানো হয়েছে (pt-5 lg:pt-16)
     <section className="relative overflow-hidden bg-white pt-5 pb-20 lg:pt-16 lg:pb-32">
       {/* Background Decorative Blurs */}
       <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-sky-400/10 blur-3xl" />

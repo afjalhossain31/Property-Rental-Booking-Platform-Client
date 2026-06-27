@@ -4,9 +4,12 @@ const propertyTypes = ["All", "Apartment", "House", "Studio", "Villa"];
 
 // ১. ব্যাকএন্ড (MongoDB) থেকে ডাটা আনার জন্য ফাংশন
 async function fetchProperties() {
+  // যদি env ভেরিয়েবল না পায়, তবে যেন ক্র্যাশ না করে লোকালহোস্ট ব্যবহার করে
+  const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+
   try {
-    const res = await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/properties", {
-      cache: "no-store", // যেন সবসময় লেটেস্ট ডাটা আসে
+    const res = await fetch(`${baseUrl}/properties`, {
+      cache: "no-store",
     });
     if (!res.ok) {
       throw new Error("Failed to fetch properties");
@@ -14,19 +17,27 @@ async function fetchProperties() {
     return res.json();
   } catch (error) {
     console.error("Error fetching properties:", error);
-    return []; // ডাটাবেস কানেক্ট না হলে বা এরর হলে ফাঁকা অ্যারে রিটার্ন করবে
+    return [];
   }
 }
 
 // ২. প্রপার্টি ফিল্টার করার ফাংশন
 function filterProperties(propertiesData, searchParams) {
-  const locationQuery = (searchParams.location || "").toLowerCase().trim();
-  const typeQuery = searchParams.type || "All";
-  const sortQuery = searchParams.sort || "";
-  const minQuery = Number(searchParams.min || 0);
-  const maxQuery = Number(searchParams.max || 0);
+  // যদি ডাটা না আসে তবে ফাঁকা অ্যারে রিটার্ন করবে (Defensive Programming)
+  if (!Array.isArray(propertiesData)) return [];
 
-  let result = propertiesData.filter((property) => property.status === "approved");
+  const locationQuery = (searchParams?.location || "").toLowerCase().trim();
+  const typeQuery = searchParams?.type || "All";
+  const sortQuery = searchParams?.sort || "";
+  const minQuery = Number(searchParams?.min || 0);
+  const maxQuery = Number(searchParams?.max || 0);
+
+  // Status চেক (ছোট-বড় হাতের অক্ষরের সমস্যা এড়াতে toLowerCase ব্যবহার করা হলো)
+  // ⚠️ নোট: ডাটাবেসে যদি প্রপার্টির স্ট্যাটাস "Pending" থাকে, তবে এখানে ০ দেখাবে। 
+  // টেস্ট করার জন্য আপনি চাইলে এই লাইনটি সাময়িকভাবে বন্ধ রাখতে পারেন।
+  let result = propertiesData.filter((property) =>
+    property.status?.toLowerCase() === "approved"
+  );
 
   if (locationQuery) {
     result = result.filter((property) =>
@@ -35,23 +46,25 @@ function filterProperties(propertiesData, searchParams) {
   }
 
   if (typeQuery && typeQuery !== "All") {
-    result = result.filter((property) => property.type === typeQuery);
+    result = result.filter((property) =>
+      property.type?.toLowerCase() === typeQuery.toLowerCase()
+    );
   }
 
-  if (minQuery) {
-    result = result.filter((property) => property.price >= minQuery);
+  if (minQuery > 0) {
+    result = result.filter((property) => Number(property.price) >= minQuery);
   }
 
-  if (maxQuery) {
-    result = result.filter((property) => property.price <= maxQuery);
+  if (maxQuery > 0) {
+    result = result.filter((property) => Number(property.price) <= maxQuery);
   }
 
   if (sortQuery === "price-asc") {
-    result = [...result].sort((a, b) => a.price - b.price);
+    result = [...result].sort((a, b) => Number(a.price) - Number(b.price));
   }
 
   if (sortQuery === "price-desc") {
-    result = [...result].sort((a, b) => b.price - a.price);
+    result = [...result].sort((a, b) => Number(b.price) - Number(a.price));
   }
 
   return result;
@@ -60,10 +73,10 @@ function filterProperties(propertiesData, searchParams) {
 export default async function PropertiesPage({ searchParams }) {
   // Next.js 15 এর জন্য searchParams resolve করা
   const resolvedParams = await searchParams;
-  
+
   // ৩. ডাটাবেস থেকে সব প্রপার্টি কল করা হচ্ছে
   const allProperties = await fetchProperties();
-  
+
   // ৪. ডাটাবেসের ডাটাগুলো ফিল্টার করা হচ্ছে
   const list = filterProperties(allProperties, resolvedParams || {});
 
@@ -149,7 +162,7 @@ export default async function PropertiesPage({ searchParams }) {
           <button type="submit" className="w-full rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-700">
             Search
           </button>
-          <a href="/properties" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-sky-200 hover:text-sky-700">
+          <a href="/properties" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-sky-400 hover:text-sky-700">
             Reset
           </a>
         </div>

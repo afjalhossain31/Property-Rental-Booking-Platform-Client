@@ -68,7 +68,7 @@ export default function RentalStatistics() {
   };
 
   return (
-    // এখানে pt-8 sm:pt-12 ব্যবহার করে উপরের প্যাডিং কমানো হয়েছে
+    
     <section className="relative overflow-hidden bg-white pt-8 pb-16 sm:pt-12 sm:pb-24">
       {/* Subtle Background Glow Effect (Optional, adds premium feel) */}
       <div className="absolute left-1/2 top-0 -z-10 h-[30rem] w-[50rem] -translate-x-1/2 rounded-full bg-sky-50/50 blur-3xl" />

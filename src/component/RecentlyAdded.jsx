@@ -7,15 +7,14 @@ import { motion } from "framer-motion";
 
 export default function RecentlyAdded() {
   const [properties, setProperties] = useState([]);
-  const userEmail = "tenant@example.com"; // এটি ডাইনামিক Auth থেকে আসা উচিত
+  const userEmail = "tenant@example.com"; 
 
   useEffect(() => {
-    fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/properties")
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/properties`)
       .then((res) => res.json())
       .then((data) => setProperties(data.slice(0, 3)));
   }, []);
 
-  // Save ফাংশন - যা ডাটাবেসের favorites কালেকশনে পাঠাবে
   const handleSave = async (property) => {
     const favoriteData = {
       propertyId: property._id,
@@ -26,7 +25,7 @@ export default function RecentlyAdded() {
     };
 
     try {
-      const res = await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/favorites", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/favorites`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(favoriteData),

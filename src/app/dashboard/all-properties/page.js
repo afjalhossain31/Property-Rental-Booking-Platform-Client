@@ -15,7 +15,7 @@ export default function AllPropertiesAdmin() {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const res = await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/properties");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/properties`);
         if (res.ok) setProperties(await res.json());
       } catch (error) {
         console.error("Failed to fetch properties:", error);

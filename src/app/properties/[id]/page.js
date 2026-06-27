@@ -16,11 +16,9 @@ export default function PropertyDetailsPage() {
   const [bookingModal, setBookingModal] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
 
-  // লোকাল স্টোরেজ থেকে ইউজারের তথ্য রাখার জন্য স্টেট
   const [currentUser, setCurrentUser] = useState({ name: "User", email: "" });
 
   useEffect(() => {
-    // পেজ লোড হলে লোকাল স্টোরেজ থেকে লগইন করা ইউজারের ইমেইল নিচ্ছি
     if (typeof window !== "undefined") {
       const email = window.localStorage.getItem("userEmail");
       if (email) {
@@ -43,7 +41,6 @@ export default function PropertyDetailsPage() {
     if (id) fetchDetails();
   }, [id]);
 
-  // Request to Book বাটনে ক্লিক করলে চেক করবে ইউজার লগইন করা আছে কি না
   const handleOpenModal = () => {
     if (!currentUser.email) {
       toast.error("Please login to book a property!");
@@ -53,7 +50,8 @@ export default function PropertyDetailsPage() {
     setBookingModal(true);
   };
 
-  // Stripe Checkout API কল করার ফাংশন
+
+  // Stripe Checkout API 
   const handleBooking = async (e) => {
     e.preventDefault();
     setBookingLoading(true);
@@ -61,7 +59,7 @@ export default function PropertyDetailsPage() {
     try {
       const currentEmail = window.localStorage.getItem("userEmail") || currentUser.email;
 
-      // Stripe-এর API Route-এ রিকোয়েস্ট পাঠানো হচ্ছে
+      // Stripe-এর API Route-
       const res = await fetch('/api/checkout_sessions', {
         method: 'POST',
         headers: {
@@ -105,7 +103,6 @@ export default function PropertyDetailsPage() {
     );
   }
 
-  // Amenities Array (যদি স্ট্রিং আকারে থাকে, তাহলে কমা দিয়ে ভাগ করে নিচ্ছি)
   const amenitiesList = typeof property.amenities === 'string' 
     ? property.amenities.split(',').map(item => item.trim()) 
     : property.amenities || [];

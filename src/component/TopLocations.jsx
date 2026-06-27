@@ -11,7 +11,6 @@ export default function TopLocations() {
     { id: 'l4', name: 'Sylhet', count: 180, color: 'from-purple-500 to-indigo-400' },
   ];
 
-  // পুরো গ্রিডটির জন্য অ্যানিমেশন
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -20,7 +19,6 @@ export default function TopLocations() {
     },
   };
 
-  // প্রতিটি কার্ড বাম থেকে ডানে আসবে
   const cardVariants = {
     hidden: { opacity: 0, x: -50 },
     visible: { 
