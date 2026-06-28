@@ -4,13 +4,7 @@ A full-stack Property Rental & Booking Platform where property owners can list r
 
 ## 🌐 Live Website
 
-**Live Link:** https://your-live-site.vercel.app
-
-## 📂 Repositories
-
-**Client Repository:** https://github.com/your-username/property-rental-client
-
-**Server Repository:** https://github.com/your-username/property-rental-server
+**Live Link:** [https://property-rental-booking-platform-cl.vercel.app/]
 
 ---
 
@@ -24,6 +18,64 @@ The purpose of this platform is to create a secure and transparent rental market
 * Online payments can be processed securely through Stripe.
 
 ---
+
+## 📁 Frontend Folder Structure
+
+```bash
+property-rental-client/
+├── public/                       # Static assets (images, icons, etc.)
+│   └── favicon.ico
+├── src/
+│   ├── app/                      # Next.js App Router Core
+│   │   ├── api/                  # API Routes
+│   │   │   ├── auth/[...all]/    # Authentication endpoints (Better Auth)
+│   │   │   └── checkout_sessions/# Stripe payment API
+│   │   ├── dashboard/            # User/Owner/Admin Dashboard
+│   │   │   ├── add-property/
+│   │   │   ├── all-bookings/
+│   │   │   ├── all-properties/
+│   │   │   ├── booking-requests/
+│   │   │   ├── favorites/
+│   │   │   ├── my-bookings/
+│   │   │   ├── my-properties/
+│   │   │   ├── profile/
+│   │   │   ├── transactions/
+│   │   │   ├── layout.js         # Dashboard layout & sidebar
+│   │   │   └── page.js           # Dashboard home
+│   │   ├── forgot-password/
+│   │   │   └── page.js
+│   │   ├── login/
+│   │   ├── payment-success/
+│   │   ├── properties/
+│   │   │   ├── [id]/
+│   │   │   └── page.js
+│   │   ├── register/
+│   │   ├── globals.css
+│   │   ├── layout.js             # Root layout
+│   │   └── page.js               # Landing page
+│   │
+│   ├── components/              # Reusable UI Components
+│   │   ├── Banner.jsx
+│   │   ├── CustomerReviews.jsx
+│   │   ├── FeaturedProperties.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── PropertyCard.jsx
+│   │   ├── RecentlyAdded.jsx
+│   │   ├── RentalStatistics.jsx
+│   │   ├── TopLocations.jsx
+│   │   └── WhyChooseUs.jsx
+│   │
+│   └── lib/                     # Utilities & Configurations
+│       ├── auth-client.js
+│       ├── auth.js
+│       └── stripe.js
+│
+├── .env.local                   # Environment variables
+├── next.config.js               # Next.js configuration
+├── tailwind.config.js           # Tailwind CSS configuration
+└── package.json                 # Dependencies and scripts
+```
 
 ## ✨ Key Features
 
