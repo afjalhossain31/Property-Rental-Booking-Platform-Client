@@ -8,7 +8,6 @@ export default function MyPropertiesPage() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // ডেমো ওনার ইমেইল (বাস্তবে এটি লগইন করা ইউজারের ইমেইল হবে)
   const ownerEmail = "owner@example.com"; 
 
   useEffect(() => {

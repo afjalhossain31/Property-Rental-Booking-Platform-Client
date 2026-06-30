@@ -3,16 +3,14 @@ import { stripe } from '../../../lib/stripe'; // আপনার তৈরি �
 
 export async function POST(req) {
   try {
-    // ফ্রন্টএন্ড থেকে পাঠানো ডেটা রিসিভ করা
     const body = await req.json();
     const { property, user } = body;
 
     const origin = req.headers.get('origin') || 'http://localhost:3000';
     
-    // দাম (Price) নিশ্চিত করা যেন Number ফরম্যাটে থাকে
     const priceAmount = Number(property.price) || 0;
 
-    // Stripe Checkout Session তৈরি করা
+    // Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -30,10 +28,8 @@ export async function POST(req) {
       ],
       mode: 'payment', 
       
-      // পেমেন্ট সফল হলে এই লিংকে যাবে
       success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}&propertyId=${property._id}&amount=${priceAmount}&ownerEmail=${property.ownerEmail}&tenantEmail=${user.email}&propertyName=${encodeURIComponent(property.title || 'Property')}`,
       
-      // পেমেন্ট ক্যানসেল করলে প্রপার্টি পেজেই ফেরত আসবে
       cancel_url: `${origin}/properties/${property._id}`,
     });
 

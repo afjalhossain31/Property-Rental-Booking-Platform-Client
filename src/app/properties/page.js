@@ -1,10 +1,9 @@
 import PropertyCard from "@/component/PropertyCard";
-
+import Link from "next/link";
 const propertyTypes = ["All", "Apartment", "House", "Studio", "Villa"];
 
 // ১. ব্যাকএন্ড (MongoDB) থেকে ডাটা আনার জন্য ফাংশন
 async function fetchProperties() {
-  // যদি env ভেরিয়েবল না পায়, তবে যেন ক্র্যাশ না করে লোকালহোস্ট ব্যবহার করে
   const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
 
   try {
@@ -23,7 +22,6 @@ async function fetchProperties() {
 
 // ২. প্রপার্টি ফিল্টার করার ফাংশন
 function filterProperties(propertiesData, searchParams) {
-  // যদি ডাটা না আসে তবে ফাঁকা অ্যারে রিটার্ন করবে (Defensive Programming)
   if (!Array.isArray(propertiesData)) return [];
 
   const locationQuery = (searchParams?.location || "").toLowerCase().trim();
@@ -32,9 +30,6 @@ function filterProperties(propertiesData, searchParams) {
   const minQuery = Number(searchParams?.min || 0);
   const maxQuery = Number(searchParams?.max || 0);
 
-  // Status চেক (ছোট-বড় হাতের অক্ষরের সমস্যা এড়াতে toLowerCase ব্যবহার করা হলো)
-  // ⚠️ নোট: ডাটাবেসে যদি প্রপার্টির স্ট্যাটাস "Pending" থাকে, তবে এখানে ০ দেখাবে। 
-  // টেস্ট করার জন্য আপনি চাইলে এই লাইনটি সাময়িকভাবে বন্ধ রাখতে পারেন।
   let result = propertiesData.filter((property) =>
     property.status?.toLowerCase() === "approved"
   );
@@ -162,9 +157,9 @@ export default async function PropertiesPage({ searchParams }) {
           <button type="submit" className="w-full rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-700">
             Search
           </button>
-          <a href="/properties" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-sky-400 hover:text-sky-700">
+          <Link href="/properties" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-sky-400 hover:text-sky-700">
             Reset
-          </a>
+          </Link>
         </div>
       </form>
 

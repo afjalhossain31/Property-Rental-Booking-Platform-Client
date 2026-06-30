@@ -30,7 +30,6 @@ const RegistrationPage = () => {
     }));
   };
 
-  // Google Registration লজিক
   const handleGoogleSignUp = async () => {
     try {
       const { data, error: socialError } = await authClient.signIn.social({
@@ -41,7 +40,7 @@ const RegistrationPage = () => {
       if (socialError) throw new Error(socialError.message);
 
       if (data?.user) {
-        await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/users/google", {
+        await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -49,7 +48,7 @@ const RegistrationPage = () => {
             email: data.user.email,
             photo: data.user.image,
             role: "tenant",
-            createdAt: new Date(),
+            createdAt: new Date(), 
           }),
         });
         window.localStorage.setItem("staynest-auth", "true");
@@ -86,8 +85,7 @@ const RegistrationPage = () => {
 
       if (signUpError) throw new Error(signUpError.message || "Registration failed");
 
-      // ডাটাবেসে ইউজার সেভ করা
-      await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/users", {
+      await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -99,15 +97,10 @@ const RegistrationPage = () => {
         }),
       });
 
-      // -----------------------------------------------------
-      // FIX: রেজিস্ট্রেশনের পর অটোমেটিক লগইন আটকানোর জন্য
-      // ইউজারকে ব্যাকগ্রাউন্ডে সাইন-আউট করে দিচ্ছি
-      // -----------------------------------------------------
       await authClient.signOut();
       if (typeof window !== "undefined") {
         window.localStorage.removeItem("staynest-auth");
         window.localStorage.removeItem("userEmail");
-        // Navbar কে জানানোর জন্য ইভেন্ট ট্রিগার
         window.dispatchEvent(new Event("storage"));
       }
 

@@ -47,14 +47,14 @@ function SuccessContent() {
                         date: new Date().toISOString(),
                     };
 
-                    await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/bookings", {
+                    await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/bookings`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(bookingData),
                     });
 
                     // ৪. ব্যাকএন্ডে Transaction সেভ করা
-                    await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/transactions", {
+                    await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/transactions`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(transactionData),

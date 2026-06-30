@@ -10,7 +10,6 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState(true);
   const userEmail = "tenant@example.com"; // এটি ডাইনামিক Auth থেকে আসা উচিত
 
-  // ডাটাবেস থেকে ফেভারিট প্রপার্টিগুলো ফেচ করা
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/favorites/${userEmail}`)
       .then((res) => res.json())
@@ -24,7 +23,6 @@ export default function FavoritesPage() {
       });
   }, []);
 
-  // ডাটাবেস থেকে রিমুভ করার ফাংশন
   const removeFavorite = async (id) => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/favorites/${id}`, {

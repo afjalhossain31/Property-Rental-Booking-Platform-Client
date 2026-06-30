@@ -2,58 +2,35 @@
 
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { authClient } from "@/lib/auth-client"; 
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
   
-  // স্টেটটি এখন ফাঁকা রাখা হয়েছে, ডাটাবেস থেকে ডেটা এলে আপডেট হবে
+  const { data: session, isPending } = authClient.useSession();
+  const sessionUser = session?.user;
+
   const [user, setUser] = useState({
     name: "",
     email: "",
     phone: "Not Provided",
     address: "Not Provided",
-    joined: "",
+    joined: "Recently",
     role: "Tenant"
   });
 
-  // পেজ লোড হওয়ার সাথে সাথে ইউজারের ডেটা ডাটাবেস থেকে নিয়ে আসবে
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        // লগইন করার সময় লোকাল স্টোরেজে রাখা ইমেইলটি নিচ্ছি
-        const email = window.localStorage.getItem("userEmail");
-
-        if (!email) {
-          setLoading(false);
-          return;
-        }
-
-        // ব্যাকএন্ড থেকে ইউজারের ডেটা ফেচ করা হচ্ছে
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${email}`);
-        const data = await res.json();
-
-        if (data) {
-          setUser({
-            name: data.name || "Unknown",
-            email: data.email || email,
-            phone: data.phone || "Not Provided",
-            address: data.address || "Not Provided",
-            // ডেট ফরম্যাট ঠিক করার জন্য
-            joined: data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "Recently",
-            role: data.role || "Tenant"
-          });
-        }
-      } catch (error) {
-        console.error("Failed to fetch user data", error);
-        toast.error("Failed to load profile data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
+    if (sessionUser) {
+      setUser({
+        name: sessionUser.name || "Unknown",
+        email: sessionUser.email || "",
+        phone: "Not Provided",
+        address: "Not Provided",
+        joined: sessionUser.createdAt ? new Date(sessionUser.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "Recently",
+        role: sessionUser.role || "Tenant"
+      });
+    }
+  }, [sessionUser]);
 
   const handleEditChange = (e, field) => {
     setUser({ ...user, [field]: e.target.value });
@@ -61,13 +38,12 @@ export default function ProfilePage() {
 
   const handleSave = () => {
     if (isEditing) {
-      // এখানে ভবিষ্যতে ডাটাবেসে আপডেট করার (PATCH request) কোড বসবে
       toast.success("Profile changes saved locally!");
     }
     setIsEditing(!isEditing);
   };
 
-  if (loading) {
+  if (isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-slate-500 font-medium">Loading profile...</p>
@@ -77,7 +53,6 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      {/* Header Section */}
       <div className="flex justify-between items-end mb-8">
         <div>
           <h2 className="text-3xl font-bold text-slate-900">My Profile</h2>
@@ -91,7 +66,6 @@ export default function ProfilePage() {
         </button>
       </div>
 
-      {/* Main Profile Info */}
       <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
         <div className="flex items-center gap-6 mb-8">
           <div className="h-20 w-20 rounded-full bg-sky-100 flex items-center justify-center text-3xl font-bold text-sky-600 uppercase">
@@ -103,11 +77,10 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Grid Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
             { label: "Full Name", value: user.name, field: "name", editable: true },
-            { label: "Email Address", value: user.email, field: "email", editable: false }, // ইমেইল সাধারণত এডিট করা যায় না
+            { label: "Email Address", value: user.email, field: "email", editable: false },
             { label: "Phone Number", value: user.phone, field: "phone", editable: true },
             { label: "Current Address", value: user.address, field: "address", editable: true },
             { label: "Member Since", value: user.joined, field: "joined", editable: false },
@@ -130,7 +103,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Account Danger Zone */}
       <div className="mt-8 p-6 bg-rose-50 rounded-2xl border border-rose-100">
         <h4 className="font-bold text-rose-900">Delete Account</h4>
         <p className="text-sm text-rose-700 mt-1">Once you delete your account, there is no going back.</p>

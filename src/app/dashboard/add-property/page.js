@@ -23,7 +23,6 @@ export default function AddPropertyPage() {
     e.preventDefault();
     setLoading(true);
 
-    // Amenities কে স্ট্রিং থেকে অ্যারেতে রূপান্তর
     const amenityArray = formData.amenities.split(",").map(item => item.trim());
 
     try {

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { authClient } from "@/lib/auth-client";
 
 export default function PropertyDetailsPage() {
   const params = useParams();
@@ -16,16 +17,10 @@ export default function PropertyDetailsPage() {
   const [bookingModal, setBookingModal] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
 
-  const [currentUser, setCurrentUser] = useState({ name: "User", email: "" });
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const email = window.localStorage.getItem("userEmail");
-      if (email) {
-        setCurrentUser({ name: "User", email: email });
-      }
-    }
-
     const fetchDetails = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/properties/${id}`);
@@ -42,7 +37,7 @@ export default function PropertyDetailsPage() {
   }, [id]);
 
   const handleOpenModal = () => {
-    if (!currentUser.email) {
+    if (!user) {
       toast.error("Please login to book a property!");
       router.push("/login");
       return;
@@ -50,16 +45,13 @@ export default function PropertyDetailsPage() {
     setBookingModal(true);
   };
 
-
-  // Stripe Checkout API 
   const handleBooking = async (e) => {
     e.preventDefault();
     setBookingLoading(true);
 
     try {
-      const currentEmail = window.localStorage.getItem("userEmail") || currentUser.email;
+      const currentEmail = user?.email;
 
-      // Stripe-এর API Route-
       const res = await fetch('/api/checkout_sessions', {
         method: 'POST',
         headers: {
@@ -74,7 +66,6 @@ export default function PropertyDetailsPage() {
       const data = await res.json();
 
       if (data.url) {
-        // সফল হলে Stripe-এর পেমেন্ট পেজে রিডাইরেক্ট করে দেওয়া হবে
         window.location.href = data.url;
       } else {
         toast.error(data.error || "Failed to initiate payment");
@@ -111,7 +102,6 @@ export default function PropertyDetailsPage() {
     <section className="bg-slate-50/50 py-12 sm:py-16 dark:bg-slate-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
-        {/* Main Image Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
@@ -142,17 +132,14 @@ export default function PropertyDetailsPage() {
           </div>
         </motion.div>
 
-        {/* Content Section */}
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-3">
           
-          {/* Left Column: Property Details */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }} 
             animate={{ opacity: 1, x: 0 }} 
             transition={{ delay: 0.2 }}
             className="lg:col-span-2"
           >
-            {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800/50">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Property Type</p>
@@ -172,7 +159,6 @@ export default function PropertyDetailsPage() {
               </div>
             </div>
 
-            {/* Description */}
             <div className="mt-10">
               <h3 className="text-2xl font-bold text-slate-900 dark:text-white">About this property</h3>
               <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-line text-lg">
@@ -180,7 +166,6 @@ export default function PropertyDetailsPage() {
               </p>
             </div>
 
-            {/* Amenities */}
             {amenitiesList.length > 0 && (
               <div className="mt-10">
                 <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Amenities</h3>
@@ -195,7 +180,6 @@ export default function PropertyDetailsPage() {
             )}
           </motion.div>
 
-          {/* Right Column: Booking Card (Sticky) */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }} 
             animate={{ opacity: 1, x: 0 }} 
@@ -236,7 +220,6 @@ export default function PropertyDetailsPage() {
         </div>
       </div>
 
-      {/* Booking Confirmation Modal */}
       {bookingModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
           <motion.div 
@@ -252,11 +235,11 @@ export default function PropertyDetailsPage() {
             <div className="my-6 space-y-3 rounded-2xl bg-slate-50 p-5 border border-slate-100 dark:border-slate-800 dark:bg-slate-800/50">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500 dark:text-slate-400">Tenant Name:</span>
-                <span className="font-semibold text-slate-900 dark:text-white">{currentUser.name}</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{user?.name || "Tenant"}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500 dark:text-slate-400">Tenant Email:</span>
-                <span className="font-semibold text-slate-900 dark:text-white">{currentUser.email}</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{user?.email}</span>
               </div>
               <div className="border-t border-slate-200 pt-3 flex justify-between font-medium dark:border-slate-700">
                 <span className="text-slate-700 dark:text-slate-300">Total Rent:</span>
