@@ -21,21 +21,18 @@ export default function LoginPage() {
     try {
       const { data, error: socialError } = await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/", // হোম পেজে রিডাইরেক্ট করার জন্য
+        callbackURL: "/", 
       });
 
       if (socialError) throw new Error(socialError.message);
 
-      // যদি সফল হয়, তাহলে লোকাল স্টোরেজ আপডেট করা
       if (data?.user) {
         window.localStorage.setItem("staynest-auth", "true");
         window.localStorage.setItem("userEmail", data.user.email);
         
-        // Navbar কে সাথে সাথে আপডেট করার জন্য ইভেন্ট ট্রিগার
         window.dispatchEvent(new Event("storage"));
         
-        // ডাটাবেসে ইউজার সেভ করা (যদি নতুন হয়)
-        await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/users/google", {
+        await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -48,7 +45,7 @@ export default function LoginPage() {
         });
 
         toast.success("Google Login Successful!");
-        router.push("/"); // হোম পেজে পুশ করা
+        router.push("/"); 
         router.refresh();
       }
     } catch (err) {
@@ -56,7 +53,6 @@ export default function LoginPage() {
     }
   };
 
-  // ইমেইল লগইন লজিক
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -66,16 +62,14 @@ export default function LoginPage() {
       const { data, error: signInError } = await authClient.signIn.email({
         email,
         password,
-        callbackURL: "/", // হোম পেজে রিডাইরেক্ট করার জন্য
+        callbackURL: "/", 
       });
 
       if (signInError) throw new Error(signInError.message || "Invalid email or password");
 
-      // সাকসেসফুল লগইন
       window.localStorage.setItem("staynest-auth", "true");
       window.localStorage.setItem("userEmail", email);
       
-      // Navbar কে সাথে সাথে আপডেট করার জন্য ইভেন্ট ট্রিগার
       window.dispatchEvent(new Event("storage"));
 
       toast.success("Login Successful! 🎉");

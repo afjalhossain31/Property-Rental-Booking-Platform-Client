@@ -24,6 +24,61 @@ The purpose of this platform is to create a secure and transparent rental market
 * Online payments can be processed securely through Stripe.
 
 ---
+## 📁 Project Structure
+
+property-rental-client/
+├── public/                       # Static assets (images, icons, etc.)
+│   └── assets/Banner.jpeg
+├── src/
+│   ├── app/                      # Next.js App Router Core
+│   │   ├── api/                  # API Routes
+│   │   │   ├── auth/[...all]/    # Authentication endpoints (Better Auth)
+│   │   │   └── checkout_sessions/# Stripe payment API
+│   │   ├── dashboard/            # User/Owner/Admin Dashboard
+│   │   │   ├── add-property/
+│   │   │   ├── all-bookings/
+│   │   │   ├── all-properties/
+│   │   │   ├── booking-requests/
+│   │   │   ├── favorites/
+│   │   │   ├── my-bookings/
+│   │   │   ├── my-properties/
+│   │   │   ├── profile/
+│   │   │   ├── transactions/
+│   │   │   ├── layout.js         # Dashboard common layout & sidebar
+│   │   │   └── page.js           # Dashboard home
+│   │   ├── forgot-password/      # Password Reset Page
+│   │   │   └── page.js
+│   │   ├── login/                # User Login Page
+│   │   ├── payment-success/      # Post-payment success page
+│   │   ├── properties/           # Property listings
+│   │   │   ├── [id]/             # Dynamic property details page
+│   │   │   └── page.js           # Search & filter properties
+│   │   ├── register/             # User Registration Page
+│   │   ├── globals.css           # Global Tailwind CSS styles
+│   │   ├── layout.js             # Root layout (Navbar, Footer, Toast)
+│   │   └── page.js               # Main Landing Page
+│   │
+│   ├── component/                # Reusable UI Components
+│   │   ├── Banner.jsx
+│   │   ├── CustomerReviews.jsx
+│   │   ├── FeaturedProperties.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── PropertyCard.jsx
+│   │   ├── RecentlyAdded.jsx
+│   │   ├── RentalStatistics.jsx
+│   │   ├── TopLocations.jsx
+│   │   └── WhyChooseUs.jsx
+│   │
+│   └── lib/                      # Utilities and configurations
+│       ├── auth-client.js        # Authentication client config
+│       ├── auth.js               # Authentication server config
+│       └── stripe.js             # Stripe configuration & helper
+│
+├── .env.local                    # Environment variables (Stripe keys, Backend URL)
+├── next.config.js                # Next.js configuration
+├── tailwind.config.js            # Tailwind CSS configuration
+└── package.json                  # Dependencies and scripts        
 
 ## ✨ Key Features
 
