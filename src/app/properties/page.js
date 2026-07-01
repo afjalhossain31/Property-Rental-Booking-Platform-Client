@@ -2,7 +2,6 @@ import PropertyCard from "@/component/PropertyCard";
 import Link from "next/link";
 const propertyTypes = ["All", "Apartment", "House", "Studio", "Villa"];
 
-// ১. ব্যাকএন্ড (MongoDB) থেকে ডাটা আনার জন্য ফাংশন
 async function fetchProperties() {
   const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
 
@@ -20,7 +19,6 @@ async function fetchProperties() {
   }
 }
 
-// ২. প্রপার্টি ফিল্টার করার ফাংশন
 function filterProperties(propertiesData, searchParams) {
   if (!Array.isArray(propertiesData)) return [];
 
@@ -66,13 +64,10 @@ function filterProperties(propertiesData, searchParams) {
 }
 
 export default async function PropertiesPage({ searchParams }) {
-  // Next.js 15 এর জন্য searchParams resolve করা
   const resolvedParams = await searchParams;
 
-  // ৩. ডাটাবেস থেকে সব প্রপার্টি কল করা হচ্ছে
   const allProperties = await fetchProperties();
 
-  // ৪. ডাটাবেসের ডাটাগুলো ফিল্টার করা হচ্ছে
   const list = filterProperties(allProperties, resolvedParams || {});
 
   return (

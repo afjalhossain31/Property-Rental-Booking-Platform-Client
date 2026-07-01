@@ -16,7 +16,6 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // গুগল সাইন-ইন লজিক (ডাটাবেস সিঙ্কসহ)
   const handleGoogleSignIn = async () => {
     try {
       const { data, error: socialError } = await authClient.signIn.social({

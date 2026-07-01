@@ -21,7 +21,7 @@ export async function POST(req) {
               name: property.title || 'Property Booking',
               images: property.image ? [property.image] : [], 
             },
-            unit_amount: Math.round(priceAmount * 100), // সেন্ট/পয়সায় হিসাব 
+            unit_amount: Math.round(priceAmount * 100), 
           },
           quantity: 1,
         },

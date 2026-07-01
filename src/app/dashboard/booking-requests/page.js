@@ -2,18 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { authClient } from "@/lib/auth-client";
+import toast from "react-hot-toast";
 
 export default function BookingRequestsPage() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  const ownerEmail = "owner@example.com"; 
+  const { data: session } = authClient.useSession();
+  const ownerEmail = session?.user?.email;
 
   useEffect(() => {
+    if (!ownerEmail) {
+      setLoading(false);
+      return;
+    }
+
     const fetchRequests = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/owner/${ownerEmail}`);
-        if (res.ok) setRequests(await res.json());
+        if (res.ok) {
+          const data = await res.json();
+          setRequests(data);
+        }
       } catch (error) {
         console.error("Failed to fetch requests:", error);
       } finally {
@@ -21,7 +32,7 @@ export default function BookingRequestsPage() {
       }
     };
     fetchRequests();
-  }, []);
+  }, [ownerEmail]);
 
   const handleStatusChange = async (id, newStatus) => {
     try {
@@ -32,9 +43,11 @@ export default function BookingRequestsPage() {
       });
       if (res.ok) {
         setRequests(requests.map(req => req._id === id ? { ...req, status: newStatus } : req));
+        toast.success(`Booking ${newStatus} successfully`);
       }
     } catch (error) {
       console.error("Status update failed:", error);
+      toast.error("Failed to update status");
     }
   };
 

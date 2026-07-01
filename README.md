@@ -8,6 +8,11 @@ A full-stack Property Rental & Booking Platform where property owners can list r
 
 ---
 
+## 🔐 Admin Credentials (For Evaluation)
+To test the admin features and dashboard, please log in using the following credentials:
+* **Email:** admin@gmail.com 
+* **Password:** 12345678
+
 ## 🎯 Project Purpose
 
 The purpose of this platform is to create a secure and transparent rental marketplace where:

@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
+import { authClient } from "@/lib/auth-client"; 
 
 export default function AllBookingsAdmin() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -21,6 +26,31 @@ export default function AllBookingsAdmin() {
     };
     fetchBookings();
   }, []);
+
+  const handleApprove = async (id) => {
+    if (user?.role !== "admin") {
+      toast.error("Access Denied! Only admins can approve bookings.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "Approved" })
+      });
+
+      if (res.ok) {
+        setBookings(bookings.map(b => b._id === id ? { ...b, status: "Approved" } : b));
+        toast.success("Booking Approved Successfully!");
+      } else {
+        toast.error("Failed to approve booking.");
+      }
+    } catch (error) {
+      console.error("Approve failed:", error);
+      toast.error("Something went wrong!");
+    }
+  };
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
@@ -57,14 +87,26 @@ export default function AllBookingsAdmin() {
                     <td className="px-6 py-4 font-medium text-sky-600">{booking.propertyName}</td>
                     <td className="px-6 py-4 text-slate-500">{booking.ownerEmail}</td>
                     <td className="px-6 py-4 font-bold text-slate-900">৳{booking.amount?.toLocaleString()}</td>
+                    
                     <td className="px-6 py-4">
-                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase ${
-                        booking.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' : 
-                        booking.status === 'Rejected' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'
-                      }`}>
-                        {booking.status}
-                      </span>
+                      {/* Pending থাকলে বাটন দেখাবে, অন্যথায় শুধু ব্যাজ দেখাবে */}
+                      {booking.status === 'Pending' ? (
+                        <button 
+                          onClick={() => handleApprove(booking._id)}
+                          className="inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase bg-amber-100 text-amber-700 hover:bg-amber-200 hover:scale-105 transition-all shadow-sm"
+                          title="Click to Approve"
+                        >
+                          {booking.status}
+                        </button>
+                      ) : (
+                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase ${
+                          booking.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
+                        }`}>
+                          {booking.status}
+                        </span>
+                      )}
                     </td>
+
                     <td className="px-6 py-4 text-slate-500">
                       {new Date(booking.date).toLocaleDateString()}
                     </td>
